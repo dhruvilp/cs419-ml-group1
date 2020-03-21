@@ -1,6 +1,8 @@
 # cs419-ml-group1
 CS419 - Computer Security Term Project (ML Security) | A Platform for Adversarial Attack and Defenses
 
+Project Resources => https://github.com/dhruvilp/cs419-ml-group1/projects/1
+
 ## Introduction
 A platform for adversarial attack and defenses in which administrator can publish datasets (MNIST, CIFAR-10) to users to train robust models. Users can submit adversarial examples to attack all others’ models. A leaderboard GUI is also provided to show the accuracy of each model and attack success rate.
 
