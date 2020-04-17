@@ -33,8 +33,7 @@ def create_user():
 
     except:
 
-        message = {'status': '400','message': 'Invalid input data.'}
-        return jsonify(message), 400
+        return jsonify({'status': '400','message': 'Invalid input data.'}), 400
 
 
 @app.route("/login", methods=['POST'])
@@ -54,5 +53,4 @@ def login():
 
     except:
 
-        message = {'status': '400','message': 'Invalid input data.'}
-        return jsonify(message), 400
+        return jsonify({'status': '400','message': 'Invalid input data.'}), 400
