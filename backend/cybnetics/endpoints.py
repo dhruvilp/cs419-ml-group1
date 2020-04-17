@@ -1,4 +1,3 @@
-import jwt
 from flask import Flask, jsonify, request
 from pymongo import MongoClient
 
@@ -23,16 +22,15 @@ def create_user():
     from cybnetics.resources.users import create
 
     try:
-
         data = request.get_json()
         username = data['username']
         password = data['password']
-        response = create(username, password)
-        return jsonify(response[0]), response[1]
-
-
+        try:
+            token = create(username, password)
+            return jsonify({'token': token}), 201
+        except:
+            return jsonify({'status': '401','message': 'The username already exists.'}), 401
     except:
-
         return jsonify({'status': '400','message': 'Invalid input data.'}), 400
 
 
@@ -44,13 +42,13 @@ def login():
     from cybnetics.resources.users import check_password
 
     try:
-
         data = request.get_json()
         username = data['username']
         password = data['password']
-        response = check_password(username, password)
-        return jsonify(response[0]), response[1]
-
+        try:
+            token = check_password(username, password)
+            return jsonify({'token': token}), 201
+        except Exception as e:
+            return jsonify({'status': '401','message': str(e)}), 401
     except:
-
         return jsonify({'status': '400','message': 'Invalid input data.'}), 400

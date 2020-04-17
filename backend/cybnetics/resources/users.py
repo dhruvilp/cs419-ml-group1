@@ -18,11 +18,9 @@ def create(username, password):
         users.insert({'username': username, 'password': hash_password.decode('utf-8')})
         exp = datetime.datetime.utcnow() + datetime.timedelta(hours=24)
         token = jwt.encode({'username': username, 'exp': exp}, current_app.config['SECRET'])
-        message = {'token': token.decode('utf-8')}
-        return message, 201
+        return token.decode('utf-8')
     else:
-        message = {'status': '401','message': 'User already exists.'}
-        return message, 401
+        raise Exception('The username already exists.')
 
 
 def check_password(username, password):
@@ -32,14 +30,11 @@ def check_password(username, password):
         if bcrypt.check_password_hash(is_user['password'].encode('utf-8'), password):
             exp = datetime.datetime.utcnow() + datetime.timedelta(hours=24)
             token = jwt.encode({'username': username, 'exp': exp}, current_app.config['SECRET'])
-            message = {'token': token.decode('utf-8')}
-            return message, 201
+            return token.decode('utf-8')
         else:
-            message = {'status': '401','message': 'Wrong password.'}
-            return message, 401
+            raise Exception('Wrong password.')
     else:
-        message = {'status': '401','message': 'Username not found.'}
-        return message, 401
+        raise Exception('Username not found.')
 
 
 def check_jwt(jwt):
