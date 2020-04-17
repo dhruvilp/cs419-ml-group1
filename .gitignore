@@ -130,3 +130,6 @@ dmypy.json
 
 # emacs
 *~
+
+.DS_Store*
+.DS_Store

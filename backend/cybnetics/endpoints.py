@@ -1,30 +1,40 @@
-import json
-import ast
 import jwt
-import datetime
+from flask import Flask, jsonify, request
+from pymongo import MongoClient
 
-from flask import Flask, jsonify, request, session
 
 app = Flask(__name__)
 app.config.from_pyfile('./config.py')
 
 
-db = app.config['DATABASE']
+@app.before_first_request
+def db_connect():
+    app.db = MongoClient(app.config['DB_URI']).get_default_database()
 
-# This is just a sanity check from myself
-@app.route("/")
-def get_initial_response():
-    """Welcome message for the API."""
-    # Message to the user
-    message = {
-        'apiVersion': 'v1.0',
-        'status': '200',
-        'message': 'Welcome to the Flask API'
-    }
-    # Making the message looks good
-    resp = jsonify(message)
-    # Returning the object
-    return resp
+
+@app.route("/signup", methods=['POST'])
+def create_user():
+    """
+    Function to create new users.
+    **  Notice how I have to import create in the function since db_connect() is not called
+        right away meaning that we have an app RuntimeError: Working outside of application context.
+        in resources/db.py. It may not be a bad thing that we have to import here.
+    """
+    from cybnetics.resources.users import create
+
+    try:
+
+        data = request.get_json()
+        username = data['username']
+        password = data['password']
+        response = create(username, password)
+        return jsonify(response[0]), response[1]
+
+
+    except:
+
+        message = {'status': '400','message': 'Invalid input data.'}
+        return jsonify(message), 400
 
 
 @app.route("/login", methods=['POST'])
@@ -32,87 +42,17 @@ def login():
     """
     Login the user
     """
-
-    users = db.users
-    auth
-    login_user = users.find_one({'username': request.json['username']})
+    from cybnetics.resources.users import check_password
 
     try:
 
-        if login_user:
-            if(login_user['password'].encode('utf-8') == request.json['password'].encode('utf-8')):
-                exp = datetime.datetime.utcnow() + datetime.timedelta(hours=24)
-                token = jwt.encode({'username': request.json['username'], 'exp': exp}, app.config['SECRET_KEY'])
-                return jsonify({'token': token.decode('utf-8'), 'valid_until': exp}), 200
+        data = request.get_json()
+        username = data['username']
+        password = data['password']
+        response = check_password(username, password)
+        return jsonify(response[0]), response[1]
 
-        else:
-            message = {'apiVersion': 'v1.0',
-                        'status': '403',
-                        'message': 'A user with those credentials does not exist!'}
-            return jsonify(message), 403
+    except:
 
-    except Exception as e:
-        print(e)
-        message = {'apiVersion': 'v1.0',
-                    'status': '400',
-                    'message': 'Invalid request!'}
+        message = {'status': '400','message': 'Invalid input data.'}
         return jsonify(message), 400
-
-
-
-@app.route("/signup", methods=['POST', 'GET'])
-def create_user():
-    """
-    Function to create new users.
-    """
-
-    collection = db.users
-
-    if request.method == 'POST':
-        existing_user = collection.find_one({'username': request.json['username']})
-
-
-        if existing_user is None:
-
-            try:
-                # Create new users
-                try:
-                    body = ast.literal_eval(json.dumps(request.get_json()))
-                except:
-                    # Bad request as request body is not available
-                    message = {'apiVersion': 'v1.0',
-                                'status': '400',
-                                'message': 'Invalid request!'}
-                    return jsonify(message), 400
-
-                record_created = collection.insert(body)
-
-                # Prepare the response
-                if isinstance(record_created, list):
-                    # Return list of Id of the newly created item
-                    return jsonify([str(v) for v in record_created]), 201
-                else:
-                    # Return Id of the newly created item
-                    return jsonify(str(record_created)), 201
-            except:
-                # Error while trying to create the user
-                message = {'apiVersion': 'v1.0',
-                            'status': '500',
-                            'message': 'Error while trying to create the user'}
-                return jsonify(message), 500
-        else:
-            message = {'apiVersion': 'v1.0',
-                        'status': '403',
-                        'message': 'A user with that name already exists!'}
-            return jsonify(message), 403
-
-
-
-@app.route("/scoreboard", methods=['GET'])
-def get_scores():
-    """
-    Function to get the scores for a user
-    ** Still in progress
-    """
-    auth_token = request.json['token']
-    decoded_message = jwt.decode(auth_token, app.config['SECRET_KEY'])
