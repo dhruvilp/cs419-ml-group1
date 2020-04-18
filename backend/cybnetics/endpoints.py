@@ -1,13 +1,54 @@
-from flask import Flask, jsonify
+from flask import Flask, jsonify, request
 from pymongo import MongoClient
+
 
 app = Flask(__name__)
 app.config.from_pyfile('./config.py')
+
 
 @app.before_first_request
 def db_connect():
     app.db = MongoClient(app.config['DB_URI']).get_default_database()
 
-@app.route('/test', methods=['GET'])
-def test():
-    return jsonify({'hello': 'world'})
+
+@app.route("/signup", methods=['POST'])
+def create_user():
+    """
+    Function to create new users.
+    **  Notice how I have to import create in the function since db_connect() is not called
+        right away meaning that we have an app RuntimeError: Working outside of application context.
+        in resources/db.py. It may not be a bad thing that we have to import here.
+    """
+    from cybnetics.resources.users import create
+
+    try:
+        data = request.get_json()
+        username = data['username']
+        password = data['password']
+        try:
+            token = create(username, password)
+            return jsonify({'token': token}), 201
+        except:
+            return jsonify({'status': '401','message': 'The username already exists.'}), 401
+    except:
+        return jsonify({'status': '400','message': 'Invalid input data.'}), 400
+
+
+@app.route("/login", methods=['POST'])
+def login():
+    """
+    Login the user
+    """
+    from cybnetics.resources.users import check_password
+
+    try:
+        data = request.get_json()
+        username = data['username']
+        password = data['password']
+        try:
+            token = check_password(username, password)
+            return jsonify({'token': token}), 201
+        except Exception as e:
+            return jsonify({'status': '401','message': str(e)}), 401
+    except:
+        return jsonify({'status': '400','message': 'Invalid input data.'}), 400
