@@ -1,8 +1,9 @@
 import React from "react";
-import { Card, Container, } from "reactstrap";
+import { Card, Container, Row, Col, Button, CardBody} from "reactstrap";
 
 import CybneticsNavbar from "components/CybneticsNavbar.js";
 import CybneticsFooter from "components/CybneticsFooter.js";
+import FontAwesomeIcon from "assets/font-awesome/css/font-awesome.min.css"
 
 class Challenges extends React.Component {
   componentDidMount() {
@@ -24,23 +25,61 @@ class Challenges extends React.Component {
             </div>
           </section>
           <section className="section">
-            <Container>
-              <Card className="card-profile shadow mt--300">
-                <div className="px-4">
-                  <div className="text-center mt-5">
-                    <h3>
-                      Challenges
-                    </h3>
+            <Container className="mt--200">
+              <Row>
+                <Col>
+                  <div className="text-start mt--200">
+                    <p className="text-white">
+                      <span className="h1 text-white"><strong>Cybnetics ML</strong></span>
+                      <span className="h2 text-white"> is a platform for students to perform adversial attack 
+                      on trained machine learning models for learning purposes</span>
+                    </p>
                   </div>
-                  <div className="text-center mt-5">
-                    <Container>
-                      <h6>
-                        Download Datasets and Trained Models
-                      </h6>
-                    </Container>
+                </Col>
+                <Col>
+                  <div className="mt--9">
+                    <Row>
+                      <Col>
+                      <Button color="success" type="button" size="lg">Download Datasets</Button>
+                      </Col>
+                      <Col>
+                      <Button color="secondary" type="button" size="lg">Download ML Models</Button>
+                      </Col>
+                    </Row>
                   </div>
-                </div>
-              </Card>
+                  <div className="mt-5">
+                    <Card className="bg-secondary shadow border-0">
+                      <CardBody >
+                        <div>
+                          <h1>
+                            MNIST
+                            <Button className="btn-icon btn-3 ml-2" color="primary" type="button">
+                              <span className="btn-inner--icon">
+                                <FontAwesomeIcon icon={downloadfa-download}></FontAwesomeIcon>
+                              </span>
+                              <span className="btn-inner--text">With icon</span>
+                            </Button>
+                          </h1>
+                         
+                          
+                        </div>
+                      </CardBody> 
+                    </Card>
+                  </div>
+                </Col>
+              </Row>
+              <Row className="mt-8">
+                <Col>
+                  <div className="text-start mt-4">
+                    <p>
+                      <span className="h3">Users can publish their trained models on MNIST &
+                       CIFAR-10 and perform attacks on other user's models to get points</span>
+                    </p>
+                  </div>
+                </Col>
+                <Col>
+                </Col>
+            </Row>
             </Container>
           </section>
         </main>
