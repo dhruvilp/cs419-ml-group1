@@ -1,5 +1,9 @@
 from flask import Flask, jsonify, request
+from flask_bcrypt import Bcrypt
 from pymongo import MongoClient
+
+from .resources import db, users
+from .utils import *
 
 
 app = Flask(__name__)
@@ -7,11 +11,12 @@ app.config.from_pyfile('./config.py')
 
 
 @app.before_first_request
-def db_connect():
+def setup():
     app.db = MongoClient(app.config['DB_URI']).get_default_database()
+    app.bcrypt = Bcrypt(app)
 
-
-@app.route("/signup", methods=['POST'])
+@app.route('/signup', methods=['POST'])
+@require_json_body
 def create_user():
     """
     Function to create new users.
@@ -19,36 +24,36 @@ def create_user():
         right away meaning that we have an app RuntimeError: Working outside of application context.
         in resources/db.py. It may not be a bad thing that we have to import here.
     """
-    from cybnetics.resources.users import create
 
     try:
         data = request.get_json()
         username = data['username']
         password = data['password']
-        try:
-            token = create(username, password)
-            return jsonify({'token': token}), 201
-        except:
-            return jsonify({'status': '401','message': 'The username already exists.'}), 401
-    except:
-        return jsonify({'status': '400','message': 'Invalid input data.'}), 400
+    except Exception as e:
+        return 'missing parameter' + str(e), 400
 
+    try:
+        token = users.create(username, password)
+        return jsonify({'token': token}), 201
+    except users.AlreadyExists as e:
+        return str(e), 401
 
-@app.route("/login", methods=['POST'])
+@app.route('/login', methods=['POST'])
+@require_json_body
 def login():
     """
     Login the user
     """
-    from cybnetics.resources.users import check_password
 
     try:
         data = request.get_json()
         username = data['username']
         password = data['password']
-        try:
-            token = check_password(username, password)
-            return jsonify({'token': token}), 201
-        except Exception as e:
-            return jsonify({'status': '401','message': str(e)}), 401
-    except:
-        return jsonify({'status': '400','message': 'Invalid input data.'}), 400
+    except Exception as e:
+        return 'missing parameter' + str(e), 400
+
+    try:
+        token = users.check_password(username, password)
+        return jsonify({'token': token}), 201
+    except users.BadUsernameOrPassword as e:
+        return str(e), 401
