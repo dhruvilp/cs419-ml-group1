@@ -1,16 +1,33 @@
 import React from "react";
 import { Card, Container, Row, Col, Button, CardBody} from "reactstrap";
 
-import CybneticsNavbar from "components/CybneticsNavbar.js";
-import CybneticsFooter from "components/CybneticsFooter.js";
 import FontAwesomeIcon from "assets/font-awesome/css/font-awesome.min.css"
+import CybneticsNavbar from "components/CybneticsNavbar";
+import CybneticsFooter from "components/CybneticsFooter";
 
 class Challenges extends React.Component {
+
+  constructor(props){
+    super(props);
+    this.state = {
+      username: ''
+      // user: {}
+    };
+  }
+
   componentDidMount() {
     document.documentElement.scrollTop = 0;
     document.scrollingElement.scrollTop = 0;
     this.refs.main.scrollTop = 0;
+
+    this.setState({
+      username: localStorage.getItem('user')
+    });
+    // this.setState({
+    //   user: JSON.parse(localStorage.getItem('user'))
+    // });
   }
+
   render() {
     return (
       <>

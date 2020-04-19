@@ -1,8 +1,8 @@
 import React from "react";
 import { Card, Container, } from "reactstrap";
 
-import CybneticsNavbar from "components/CybneticsNavbar.js";
-import CybneticsFooter from "components/CybneticsFooter.js";
+import CybneticsNavbar from "components/CybneticsNavbar";
+import CybneticsFooter from "components/CybneticsFooter";
 
 class Dashboard extends React.Component {
   componentDidMount() {

@@ -70,6 +70,13 @@ class CybneticsNavbar extends React.Component {
                   </Row>
                 </div>
                 <Nav className="align-items-lg-center ml-lg-auto" navbar>
+                  {/* Make DASHBOARD only available to ADMIN */}
+                  <NavItem>
+                    <NavLink href="/dashboard">
+                      Dashboard
+                    </NavLink>
+                  </NavItem>
+                  {/* Make CHALLENGES only available to USER */}
                   <NavItem>
                     <NavLink href="/challenges">
                       Challenges
@@ -80,6 +87,7 @@ class CybneticsNavbar extends React.Component {
                       Leaderboard
                     </NavLink>
                   </NavItem>
+                  {/* Make OPENGROUND only available to USER */}
                   <NavItem>
                     <NavLink href="/openground">
                       Openground
@@ -87,7 +95,7 @@ class CybneticsNavbar extends React.Component {
                   </NavItem>
                   <NavItem className="d-none d-lg-block ml-lg-4">
                     <Button className="btn-neutral btn-icon" color="default" href="/login">
-                      Login
+                      Logout
                     </Button>
                   </NavItem>
                 </Nav>

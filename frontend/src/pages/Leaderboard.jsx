@@ -1,8 +1,8 @@
 import React from "react";
 import { Badge, Card, Container, Row, Col } from "reactstrap";
 
-import CybneticsNavbar from "components/CybneticsNavbar.js";
-import CybneticsFooter from "components/CybneticsFooter.js";
+import CybneticsNavbar from "components/CybneticsNavbar";
+import CybneticsFooter from "components/CybneticsFooter";
 
 class Leaderboard extends React.Component {
   componentDidMount() {
