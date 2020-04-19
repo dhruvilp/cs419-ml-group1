@@ -1,10 +1,10 @@
 import React from "react";
 import { Card, Container, } from "reactstrap";
 
-import CybneticsNavbar from "components/CybneticsNavbar.js";
-import CybneticsFooter from "components/CybneticsFooter.js";
+import CybneticsNavbar from "components/CybneticsNavbar";
+import CybneticsFooter from "components/CybneticsFooter";
 
-class Challenges extends React.Component {
+class Dashboard extends React.Component {
   componentDidMount() {
     document.documentElement.scrollTop = 0;
     document.scrollingElement.scrollTop = 0;
@@ -15,7 +15,7 @@ class Challenges extends React.Component {
       <>
         <CybneticsNavbar />
         <main ref="main">
-          <section className="section-cybnetics-cover section-shaped my-0">
+        <section className="section-cybnetics-cover section-shaped my-0">
             <div className="shape shape-primary"></div>
             <div className="separator separator-bottom separator-skew">
               <svg xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none" version="1.1" viewBox="0 0 2560 100" x="0" y="0">
@@ -29,13 +29,13 @@ class Challenges extends React.Component {
                 <div className="px-4">
                   <div className="text-center mt-5">
                     <h3>
-                      Challenges
+                        Dashboard
                     </h3>
                   </div>
                   <div className="text-center mt-5">
                     <Container>
                       <h6>
-                        Download Datasets and Trained Models
+                        Only Admin Access This Page
                       </h6>
                     </Container>
                   </div>
@@ -50,4 +50,4 @@ class Challenges extends React.Component {
   }
 }
 
-export default Challenges;
+export default Dashboard;

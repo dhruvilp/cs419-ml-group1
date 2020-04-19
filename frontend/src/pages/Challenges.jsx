@@ -1,21 +1,38 @@
 import React from "react";
 import { Card, Container, } from "reactstrap";
 
-import CybneticsNavbar from "components/CybneticsNavbar.js";
-import CybneticsFooter from "components/CybneticsFooter.js";
+import CybneticsNavbar from "components/CybneticsNavbar";
+import CybneticsFooter from "components/CybneticsFooter";
 
-class Dashboard extends React.Component {
+class Challenges extends React.Component {
+
+  constructor(props){
+    super(props);
+    this.state = {
+      username: ''
+      // user: {}
+    };
+  }
+
   componentDidMount() {
     document.documentElement.scrollTop = 0;
     document.scrollingElement.scrollTop = 0;
     this.refs.main.scrollTop = 0;
+
+    this.setState({
+      username: localStorage.getItem('user')
+    });
+    // this.setState({
+    //   user: JSON.parse(localStorage.getItem('user'))
+    // });
   }
+
   render() {
     return (
       <>
         <CybneticsNavbar />
         <main ref="main">
-        <section className="section-cybnetics-cover section-shaped my-0">
+          <section className="section-cybnetics-cover section-shaped my-0">
             <div className="shape shape-primary"></div>
             <div className="separator separator-bottom separator-skew">
               <svg xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none" version="1.1" viewBox="0 0 2560 100" x="0" y="0">
@@ -29,13 +46,13 @@ class Dashboard extends React.Component {
                 <div className="px-4">
                   <div className="text-center mt-5">
                     <h3>
-                        Dashboard
+                      Challenges
                     </h3>
                   </div>
                   <div className="text-center mt-5">
                     <Container>
                       <h6>
-                        Only Admin Access This Page
+                        Download Datasets and Trained Models
                       </h6>
                     </Container>
                   </div>
@@ -50,4 +67,4 @@ class Dashboard extends React.Component {
   }
 }
 
-export default Dashboard;
+export default Challenges;

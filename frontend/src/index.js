@@ -8,6 +8,7 @@ import "assets//font-awesome/css/font-awesome.min.css";
 import "assets/scss/argon-design-system-react.scss?v1.1.0";
 
 import Login from "pages/Login";
+import Signup from "pages/Signup";
 import Leaderboard from "pages/Leaderboard";
 import Openground from "pages/Openground";
 import Challenges from "pages/Challenges";
@@ -20,7 +21,7 @@ ReactDOM.render(
       <Route 
         path="/" 
         exact 
-        render={props => <Challenges {...props} />} 
+        render={props => <Login {...props} />} 
       />
       <Route 
         path="/challenges" 
@@ -46,6 +47,11 @@ ReactDOM.render(
         path="/login" 
         exact 
         render={props => <Login {...props} />} 
+      />
+      <Route 
+        path="/signup" 
+        exact 
+        render={props => <Signup {...props} />} 
       />
       <Redirect to="/" />
     </Switch>
