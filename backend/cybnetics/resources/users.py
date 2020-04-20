@@ -12,6 +12,13 @@ class BadUsernameOrPassword(Exception):
     def __str__(self):
         return 'wrong username or password'
 
+class NoSuchUser(Exception):
+    def __init__(self, name, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.name = name
+    def __str__(self):
+        return 'no user named ' + self.name
+
 def create(username, password):
 
     users = users_coll()
@@ -43,3 +50,7 @@ def check_jwt(token):
         return jwt.decode(token, current_app.config['SECRET'])
     except jwt.exceptions.InvalidTokenError:
         return None
+
+def exists(name):
+    users = users_coll()
+    return users.find_one({'username': name}) is not None

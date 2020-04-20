@@ -8,3 +8,6 @@ def coll(name):
 
 def users_coll():
     return coll('users')
+
+def models_coll():
+    return coll('models')
