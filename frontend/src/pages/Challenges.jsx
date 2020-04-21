@@ -1,7 +1,6 @@
 import React from "react";
 import { Card, Container, Row, Col, Button, CardBody} from "reactstrap";
 
-import FontAwesomeIcon from "assets/font-awesome/css/font-awesome.min.css"
 import CybneticsNavbar from "components/CybneticsNavbar";
 import CybneticsFooter from "components/CybneticsFooter";
 
@@ -52,6 +51,12 @@ class Challenges extends React.Component {
                       on trained machine learning models for learning purposes</span>
                     </p>
                   </div>
+                  <div className="text-start mt-7">
+                    <p>
+                      <span className="h3">Users can publish their trained models on MNIST &
+                       CIFAR-10 and perform attacks on other user's models to get points</span>
+                    </p>
+                  </div>
                 </Col>
                 <Col>
                   <div className="mt--9">
@@ -70,33 +75,38 @@ class Challenges extends React.Component {
                         <div>
                           <h1>
                             MNIST
-                            <Button className="btn-icon btn-3 ml-2" color="primary" type="button">
+                            <Button className="btn-icon btn-3 ml-8" color="primary" type="button">
                               <span className="btn-inner--icon">
-                                <FontAwesomeIcon icon={downloadfa-download}></FontAwesomeIcon>
+                                <i className="fa fa-download"></i>
                               </span>
-                              <span className="btn-inner--text">With icon</span>
+                              <span className="btn-inner--text">Download</span>
                             </Button>
                           </h1>
-                         
-                          
+                          <h5>
+                          The MNIST database of handwritten digits,
+                          available from this page, has a training set of 60,000 examples…
+                          </h5>
+                        </div>
+                        <div>
+                          <h1>
+                            CIFAR-10
+                            <Button className="btn-icon btn-3 ml-7" color="primary" type="button">
+                              <span className="btn-inner--icon">
+                                <i className="fa fa-download"></i>
+                              </span>
+                              <span className="btn-inner--text">Download</span>
+                            </Button>
+                          </h1>
+                          <h5>
+                          The CIFAR-10 dataset consists of 60000 32x32 colour images in 10 classes, 
+                          with 6000 images per class. There are 50000 training images….
+                          </h5>
                         </div>
                       </CardBody> 
                     </Card>
                   </div>
                 </Col>
               </Row>
-              <Row className="mt-8">
-                <Col>
-                  <div className="text-start mt-4">
-                    <p>
-                      <span className="h3">Users can publish their trained models on MNIST &
-                       CIFAR-10 and perform attacks on other user's models to get points</span>
-                    </p>
-                  </div>
-                </Col>
-                <Col>
-                </Col>
-            </Row>
             </Container>
           </section>
         </main>
