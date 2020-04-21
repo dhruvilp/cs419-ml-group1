@@ -20,7 +20,6 @@ class NoSuchUser(Exception):
         return 'no user named ' + self.name
 
 def create(username, password):
-
     users = users_coll()
     is_user = users.find_one({'username': username})
 
@@ -28,7 +27,9 @@ def create(username, password):
         hash_password = current_app.bcrypt.generate_password_hash(password)
         users.insert({'username': username, 'password': hash_password.decode('utf-8')})
         exp = datetime.datetime.utcnow() + datetime.timedelta(hours=24)
-        token = jwt.encode({'username': username, 'exp': exp}, current_app.config['SECRET'])
+        token = jwt.encode({'username': username,
+                            'admin': is_admin(username),
+                            'exp': exp}, current_app.config['SECRET'])
         return token.decode('utf-8')
     else:
         raise AlreadyExists()
@@ -40,10 +41,14 @@ def check_password(username, password):
     if is_user:
         if current_app.bcrypt.check_password_hash(is_user['password'].encode('utf-8'), password):
             exp = datetime.datetime.utcnow() + datetime.timedelta(hours=24)
-            token = jwt.encode({'username': username, 'exp': exp}, current_app.config['SECRET'])
+            token = jwt.encode({'username': username,
+                                'admin': is_admin(username),
+                                'exp': exp}, current_app.config['SECRET'])
             return token.decode('utf-8')
     raise BadUsernameOrPassword()
 
+def is_admin(user):
+    return user in current_app.config['ADMINS']
 
 def check_jwt(token):
     try:
