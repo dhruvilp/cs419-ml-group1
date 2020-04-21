@@ -3,11 +3,12 @@ from os import path
 
 from bson.errors import InvalidId
 from flask import current_app, send_file
+import torch
 
 from .db import models_coll
 from . import models
 import cybnetics.utils as utils
-import torch
+
 
 class ModelNotUploaded(Exception):
     pass
