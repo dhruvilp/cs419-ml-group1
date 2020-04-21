@@ -17,6 +17,10 @@ def setup():
     app.json_encoder = MongoJSONEncoder
     app.bcrypt = Bcrypt(app)
 
+@app.route('/')
+def server_test():
+    return jsonify("Server is running!")
+
 @app.route('/signup', methods=['POST'])
 @require_json_body
 def create_user():

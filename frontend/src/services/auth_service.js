@@ -1,25 +1,45 @@
-// import config from 'config';
-
 export const authService = {
     login,
+    signup,
     logout
 };
+
+const BASE_URL = 'http://127.0.0.1:5000';
 
 async function login(username, password) {
     const requestOptions = {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, password })
+        body: JSON.stringify({ 
+            "username" : username, 
+            "password" : password 
+        })
     };
 
-    const response = await fetch(`http://localhost:5000/login`, requestOptions);
+    const response = await fetch(`${BASE_URL}/login`, requestOptions);
     const user = await handleResponse(response);
+    console.log('=====' + user);
     if (user) {
-        user.authdata = window.btoa(username + ':' + password);
         localStorage.setItem('user', JSON.stringify(user));
     }
+    return user;
+}
 
-    localStorage.setItem('user', username);
+async function signup(username, password) {
+    const requestOptions = {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+            "username" : username, 
+            "password" : password 
+        })
+    };
+
+    const response = await fetch(`${BASE_URL}/signup`, requestOptions);
+    const user = await handleResponse(response);
+    if (user.ok) {
+        localStorage.setItem('user', JSON.stringify(user));
+    }
     return user;
 }
 

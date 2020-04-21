@@ -16,7 +16,7 @@ class Login extends React.Component {
       'password': '',
       submitted: false,
       loading: false,
-      error: ''
+      error: false
     }
 
     this.handleChange = this.handleChange.bind(this);
@@ -41,27 +41,27 @@ class Login extends React.Component {
     const { username, password } = this.state;
 
     if (!(username && password)) {
-        return;
+      return;
     }
 
     this.setState({ loading: true });
-    console.log('username:' + username);
-    console.log('password:' + password);
-    localStorage.setItem('user', username);
-
-    const { from } = this.props.location.state || { from: { pathname: "/challenges" } };
-    this.props.history.push(from);
-
-    this.setState({ loading: false });
-
-    // authService.login(username, password)
-    //   .then(
-    //     user => {
-    //       const { from } = this.props.location.state || { from: { pathname: "/" } };
-    //       this.props.history.push(from);
-    //     },
-    //     error => this.setState({ error, loading: false })
-    //   );
+    authService.login(username, password)
+      .then(
+        user => {
+          if(user){
+            const { from } = this.props.location.state || { from: { pathname: "/challenges" } };
+            this.props.history.push(from);
+          }
+        },
+        error => {
+          console.log(error);
+          this.setState({ 
+            error: true, 
+            loading: false
+          });
+          return;
+        }
+      );
   }
 
   render() {
@@ -87,10 +87,11 @@ class Login extends React.Component {
                           Login
                         </h3>
                       </div>
-                      {error &&
+                      { error ?
                         <UncontrolledAlert color="danger">
-                          {error}
+                          Incorrect username or password!
                         </UncontrolledAlert>
+                        : <span></span>
                       }
                       <Form role="form" onSubmit={this.handleSubmit}>
                         <FormGroup className="mb-3">

@@ -9,8 +9,7 @@ class Challenges extends React.Component {
   constructor(props){
     super(props);
     this.state = {
-      username: ''
-      // user: {}
+      user: {}
     };
   }
 
@@ -18,13 +17,9 @@ class Challenges extends React.Component {
     document.documentElement.scrollTop = 0;
     document.scrollingElement.scrollTop = 0;
     this.refs.main.scrollTop = 0;
-
     this.setState({
-      username: localStorage.getItem('user')
+      user: JSON.parse(localStorage.getItem('user'))
     });
-    // this.setState({
-    //   user: JSON.parse(localStorage.getItem('user'))
-    // });
   }
 
   render() {
