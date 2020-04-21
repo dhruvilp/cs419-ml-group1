@@ -1,8 +1,10 @@
 from flask import Flask, jsonify, request
 from flask_bcrypt import Bcrypt
 from pymongo import MongoClient, TEXT
+from bson import ObjectId
+from bson.errors import InvalidId
 
-from .resources import db, users, models
+from .resources import db, users, models, model_images
 from .utils import *
 
 
@@ -104,3 +106,33 @@ def find_models(user=None):
     if len(result) == 0:
         return 'No models matched that query', 404
     return jsonify(result)
+
+@app.route('/models/<_id>/model', methods=['POST'])
+@require_url_jwt
+def upload_model(_id, user=None):
+    if not request.files.get('model'):
+        return 'missing file named "model"', 400
+    f = request.files['model']
+    try:
+        _id = ObjectId(_id)
+        if not model_images.can_store(_id, user):
+            return 'you don\'t own that model', 403
+        model_images.store(_id, f)
+    except InvalidId:
+        return 'invalid model id', 400
+    return '', 204
+
+@app.route('/models/<_id>/model', methods=['GET'])
+@require_url_jwt
+def download_model(_id, user=None):
+    try:
+        _id = ObjectId(_id)
+        if not model_images.can_get(_id, user): # todo what if id not exists
+            return 'You lack permissions needed to download that model', 403
+
+        r = model_images.get(_id)
+        print(r)
+        return r
+    except InvalidId:
+        return 'invalid model id', 400
+    return '', 204
