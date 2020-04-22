@@ -16,7 +16,8 @@ class Signup extends React.Component {
       'password': '',
       submitted: false,
       loading: false,
-      error: ''
+      error: false,
+      errorMsg: ''
     }
 
     this.handleChange = this.handleChange.bind(this);
@@ -45,26 +46,28 @@ class Signup extends React.Component {
     }
 
     this.setState({ loading: true });
-    console.log('username:' + username);
-    console.log('password:' + password);
-
-    const { from } = this.props.location.state || { from: { pathname: "/login" } };
-    this.props.history.push(from);
-
-    this.setState({ loading: false });
-
-    // authService.login(username, password)
-    //   .then(
-    //     user => {
-    //       const { from } = this.props.location.state || { from: { pathname: "/" } };
-    //       this.props.history.push(from);
-    //     },
-    //     error => this.setState({ error, loading: false })
-    //   );
+    authService.signup(username, password)
+      .then(
+        (user) => {
+          if(user){
+            const { from } = this.props.location.state || { from: { pathname: "/challenges" } };
+            this.props.history.push(from);
+          }
+        },
+        (error) => {
+          console.log(error);
+          this.setState({ 
+            error: true, 
+            loading: false,
+            errorMsg: error
+          });
+          return;
+        }
+      );
   }
 
   render() {
-    const { username, password, submitted, loading, error } = this.state;
+    const { username, password, submitted, loading, error, errorMsg } = this.state;
     return (
       <>
         <main ref="main">
@@ -86,10 +89,13 @@ class Signup extends React.Component {
                           Signup
                         </h3>
                       </div>
-                      {error &&
-                        <UncontrolledAlert color="danger">
-                          {error}
-                        </UncontrolledAlert>
+                      { error ?
+                        <div>
+                          <UncontrolledAlert color="danger">
+                            {errorMsg}
+                          </UncontrolledAlert>
+                        </div>
+                        : <span></span>
                       }
                       <Form role="form" onSubmit={this.handleSubmit}>
                         <FormGroup className="mb-3">

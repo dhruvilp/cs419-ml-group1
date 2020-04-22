@@ -49,26 +49,6 @@ ReactDOM.render(
           path="/dashboard" 
           component={Dashboard} 
         />
-        {/* <Route 
-          path="/challenges" 
-          exact 
-          render={props => <Challenges {...props} />} 
-        /> */}
-        {/* <Route
-          path="/leaderboard"
-          exact
-          render={props => <Leaderboard {...props} />}
-        /> */}
-        {/* <Route
-          path="/openground"
-          exact
-          render={props => <Openground {...props} />}
-        /> */}
-        {/* <Route
-          path="/dashboard"
-          exact
-          render={props => <Dashboard {...props} />}
-        /> */}
         <Route 
           path="/login" 
           exact 
