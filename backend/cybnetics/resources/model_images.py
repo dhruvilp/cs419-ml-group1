@@ -1,3 +1,4 @@
+import os
 from os import path
 
 from bson.errors import InvalidId
@@ -6,6 +7,7 @@ from flask import current_app, send_file
 from .db import models_coll
 from . import models
 import cybnetics.utils as utils
+import torch
 
 class ModelNotUploaded(Exception):
     pass
@@ -13,11 +15,21 @@ class ModelNotUploaded(Exception):
 class AccessDenied(Exception):
     pass
 
+class BadModelFormat(Exception):
+    pass
+
 def store(_id, model_image_file):
     model = models.find_one(_id)
     if not model:
         return InvalidId()
-    model_image_file.save(utils.get_path('m_' + str(_id)))
+    filename = utils.get_path('m_' + str(_id))
+    model_image_file.save(filename)
+    try:
+        torch.load(filename)
+    except:
+        os.remove(filename)
+        raise BadModelFormat
+
     if model['attack_mode'] == 'white' \
        and not utils.upload_exists('d_' + str(_id)):
         return

@@ -120,6 +120,8 @@ def upload_model(_id, user=None):
         model_images.store(_id, f)
     except InvalidId:
         return 'invalid model id', 400
+    except model_images.BadModelFormat:
+        return 'model state_dict was not in pytorch format', 415
     return '', 204
 
 @app.route('/models/<_id>/model', methods=['GET'])
