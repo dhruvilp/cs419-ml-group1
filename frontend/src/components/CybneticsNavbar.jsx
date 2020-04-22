@@ -4,14 +4,26 @@ import Headroom from "headroom.js";
 import {Button, UncontrolledCollapse, NavbarBrand, Navbar, NavItem, NavLink, Nav, Container, Row, Col,} from "reactstrap";
 
 class CybneticsNavbar extends React.Component {
+
+  constructor(props){
+    super(props);
+    this.state = {
+      collapseClasses: "",
+      collapseOpen: false,
+      isAdmin: false
+    };
+  }
+
   componentDidMount() {
     let headroom = new Headroom(document.getElementById("navbar-main"));
     headroom.init();
+
+    var jwt = require('jsonwebtoken');
+    var decoded = jwt.decode(JSON.parse(localStorage.getItem('user'))['token']);
+    this.setState({ 
+      isAdmin: decoded['admin']
+    });
   }
-  state = {
-    collapseClasses: "",
-    collapseOpen: false
-  };
 
   onExiting = () => {
     this.setState({
@@ -26,6 +38,7 @@ class CybneticsNavbar extends React.Component {
   };
 
   render() {
+    const { isAdmin, collapseClasses } = this.state;
     return (
       <>
         <header className="header-global">
@@ -47,7 +60,7 @@ class CybneticsNavbar extends React.Component {
               <UncontrolledCollapse
                 toggler="#navbar_global"
                 navbar
-                className={this.state.collapseClasses}
+                className={collapseClasses}
                 onExiting={this.onExiting}
                 onExited={this.onExited}
               >
@@ -70,29 +83,32 @@ class CybneticsNavbar extends React.Component {
                   </Row>
                 </div>
                 <Nav className="align-items-lg-center ml-lg-auto" navbar>
-                  {/* Make DASHBOARD only available to ADMIN */}
-                  <NavItem>
-                    <NavLink href="/dashboard">
-                      Dashboard
-                    </NavLink>
-                  </NavItem>
-                  {/* Make CHALLENGES only available to USER */}
-                  <NavItem>
-                    <NavLink href="/challenges">
-                      Challenges
-                    </NavLink>
-                  </NavItem>
+                  {isAdmin &&
+                    <NavItem>
+                      <NavLink href="/dashboard">
+                        Dashboard
+                      </NavLink>
+                    </NavItem>
+                  }
+                  {!isAdmin &&
+                    <NavItem>
+                      <NavLink href="/challenges">
+                        Challenges
+                      </NavLink>
+                    </NavItem>
+                  }
                   <NavItem>
                     <NavLink href="/leaderboard">
                       Leaderboard
                     </NavLink>
                   </NavItem>
-                  {/* Make OPENGROUND only available to USER */}
-                  <NavItem>
-                    <NavLink href="/openground">
-                      Openground
-                    </NavLink>
-                  </NavItem>
+                  {!isAdmin &&
+                    <NavItem>
+                      <NavLink href="/openground">
+                        Openground
+                      </NavLink>
+                    </NavItem>
+                  }
                   <NavItem className="d-none d-lg-block ml-lg-4">
                     <Button className="btn-neutral btn-icon" color="default" href="/login">
                       Logout

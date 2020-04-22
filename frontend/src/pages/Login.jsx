@@ -16,7 +16,8 @@ class Login extends React.Component {
       'password': '',
       submitted: false,
       loading: false,
-      error: false
+      error: false,
+      errorMsg: ''
     }
 
     this.handleChange = this.handleChange.bind(this);
@@ -47,25 +48,26 @@ class Login extends React.Component {
     this.setState({ loading: true });
     authService.login(username, password)
       .then(
-        user => {
+        (user) => {
           if(user){
             const { from } = this.props.location.state || { from: { pathname: "/challenges" } };
             this.props.history.push(from);
           }
-        },
-        error => {
-          console.log(error);
-          this.setState({ 
-            error: true, 
-            loading: false
-          });
-          return;
         }
-      );
+      )
+      .catch((error) => {
+        console.log(error);
+        this.setState({ 
+          error: true, 
+          loading: false,
+          errorMsg: error
+        });
+        return;
+      });
   }
 
   render() {
-    const { username, password, submitted, loading, error } = this.state;
+    const { username, password, submitted, loading, error, errorMsg } = this.state;
     return (
       <>
         <main ref="main">
@@ -88,9 +90,11 @@ class Login extends React.Component {
                         </h3>
                       </div>
                       { error ?
-                        <UncontrolledAlert color="danger">
-                          Incorrect username or password!
-                        </UncontrolledAlert>
+                        <div>
+                          <UncontrolledAlert color="danger">
+                            {errorMsg}
+                          </UncontrolledAlert>
+                        </div>
                         : <span></span>
                       }
                       <Form role="form" onSubmit={this.handleSubmit}>

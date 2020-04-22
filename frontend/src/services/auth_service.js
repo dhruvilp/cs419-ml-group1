@@ -18,7 +18,6 @@ async function login(username, password) {
 
     const response = await fetch(`${BASE_URL}/login`, requestOptions);
     const user = await handleResponse(response);
-    console.log('=====' + user);
     if (user) {
         localStorage.setItem('user', JSON.stringify(user));
     }
@@ -49,7 +48,7 @@ function logout() {
 
 function handleResponse(response) {
     return response.text().then(text => {
-        const data = text && JSON.parse(text);
+        const data = (response.ok) && text && JSON.parse(text);
         if (!response.ok) {
             if (response.status === 401) {
                 // auto logout if 401 response returned from api
