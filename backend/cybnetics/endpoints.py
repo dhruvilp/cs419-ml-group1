@@ -69,6 +69,7 @@ def login():
 @app.route('/models', methods=['POST'])
 @require_json_body
 @require_body_jwt
+@require_admin
 def create_model(user=None):
     """endpoint for creating models"""
     try:
@@ -109,6 +110,7 @@ def find_models(user=None):
 
 @app.route('/models/<_id>/model', methods=['POST'])
 @require_url_jwt
+@require_admin
 def upload_model(_id, user=None):
     if not request.files.get('model'):
         return 'missing file named "model"', 400
