@@ -63,3 +63,16 @@ a.badge-silver:focus, a.badge-silver.focus {
   a.badge-bronze:focus, a.badge-bronze.focus {
       outline: 0;
       box-shadow: 0 0 0 0 rgba(245, 63, 17, 0.5); }
+
+.custom-file-label::after {
+    color: #119ab9 !important;
+    border-radius: 0 0.50rem 0.50rem 0 !important; 
+}
+
+.custom-file-label {
+    border-radius: 0.50rem !important;
+}
+
+.card {
+    border-radius: 15px !important;
+}

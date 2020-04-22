@@ -49,7 +49,13 @@ class Login extends React.Component {
     authService.login(username, password)
       .then(
         (user) => {
-          if(user){
+          var jwt = require('jsonwebtoken');
+          var isAdmin = jwt.decode(JSON.parse(localStorage.getItem('user'))['token']);
+          if(isAdmin){
+            const { from } = this.props.location.state || { from: { pathname: "/dashboard" } };
+            this.props.history.push(from);
+          }
+          else{
             const { from } = this.props.location.state || { from: { pathname: "/challenges" } };
             this.props.history.push(from);
           }
