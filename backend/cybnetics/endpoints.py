@@ -127,7 +127,8 @@ def upload_model(_id, user=None):
     return '', 204
 
 @app.route('/models/<_id>/model', methods=['GET'])
-@require_url_jwt
+@require_json_body
+@require_body_jwt
 def download_model(_id, user=None):
     try:
         _id = ObjectId(_id)
