@@ -3,6 +3,7 @@ import { Card, Container, Row, Col, Button, CardBody} from "reactstrap";
 
 import CybneticsNavbar from "components/CybneticsNavbar";
 import CybneticsFooter from "components/CybneticsFooter";
+//import Test from "pages/test.txt"
 
 class Challenges extends React.Component {
 
@@ -12,6 +13,33 @@ class Challenges extends React.Component {
       username: ''
       // user: {}
     };
+    this.downloadDatasets = this.downloadDatasets.bind(this);
+    this.downloadModels = this.downloadModels.bind(this);
+  }
+
+  downloadDatasets(){
+
+    //test for downloading a file
+    /*
+    var file_path = 'pages/test.txt';
+    var a = document.createElement('A');
+    a.href = file_path;
+    a.download = file_path;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);*/
+    
+  }
+
+  downloadModels(){
+    /*
+    var file_path = 'pages/test.txt';
+    var a = document.createElement('A');
+    a.href = file_path;
+    a.download = file_path;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);*/
   }
 
   componentDidMount() {
@@ -62,10 +90,10 @@ class Challenges extends React.Component {
                   <div className="mt--9">
                     <Row>
                       <Col>
-                      <Button color="success" type="button" size="lg">Download Datasets</Button>
+                      <Button color="success" type="button" size="lg" onClick={this.downloadDatasets}>Download Datasets</Button>
                       </Col>
                       <Col>
-                      <Button color="secondary" type="button" size="lg">Download ML Models</Button>
+                      <Button color="secondary" type="button" size="lg" onClick={this.downloadModels}>Download ML Models</Button>
                       </Col>
                     </Row>
                   </div>
