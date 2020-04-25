@@ -4,7 +4,7 @@ from pymongo import MongoClient, TEXT
 from bson import ObjectId
 from bson.errors import InvalidId
 
-from .resources import db, users, models, model_images
+from .resources import db, users, models, model_images, model_attacks
 from .utils import *
 
 
@@ -112,9 +112,9 @@ def find_models(user=None):
 @require_url_jwt
 @require_admin
 def upload_model(_id, user=None):
-    if not request.files.get('model'):
+    f = request.files.get('model')
+    if not f:
         return 'missing file named "model"', 400
-    f = request.files['model']
     try:
         _id = ObjectId(_id)
         if not model_images.can_store(_id, user):
@@ -135,9 +135,26 @@ def download_model(_id, user=None):
         if not model_images.can_get(_id, user): # todo what if id not exists
             return 'You lack permissions needed to download that model', 403
 
-        r = model_images.get(_id)
-        print(r)
-        return r
+        return model_images.get(_id)
+    except InvalidId:
+        return 'model not found', 404
+    return '', 204
+
+@app.route('/models/<_id>/attack', methods=['POST'])
+@require_url_jwt
+def attempt_attack(_id, user=None):
+    try:
+        _id = ObjectId(_id)
+        f = request.files.get('image')
+        label = request.args.get('label')
+        if not f:
+            return 'missing file named "image"', 400
+        if not label:
+            return 'missing url parameter "label"', 400
+        if not models.find_one(_id):
+            return 'model not found', 404
+        success = model_attacks.simulate_attack(_id, label, f, user)
+        result = model_attacks.save_attack(_id, label, user, success)
+        return jsonify(result)
     except InvalidId:
         return 'invalid model id', 400
-    return '', 204
