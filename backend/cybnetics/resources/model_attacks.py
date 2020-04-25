@@ -1,9 +1,11 @@
 import os
 
 from bson import ObjectId
+from pymongo import ReturnDocument
 
-from .db import models_coll
 from cybnetics import utils
+from .db import models_coll
+from . import models
 
 SCORE_MAP = {
     'white': 1,
@@ -34,20 +36,21 @@ def simulate_attack(model_id, label, attack_image, user):
     os.remove(filename)
     return success
 
-def set_place(model_id, place, place_name):
+def set_place(attack_id, place_name):
     models_c = models_coll()
     models_c.update_one({
-        '_id': model_id, # the attack must be a member of the target model
-        'attacks.' + str(place): {'$exists': True}, # must have a attack at index place
-        # the attack must not have its place assigned yet
-        'attacks.' + str(place) + '.place': {'$exists': False}
+        'attacks._id': attack_id
     }, {
-        '$set': {'attacks.'+str(place)+'.place': place_name} # assign the attack its place
+        '$set': {'attacks.$.place': place_name} # assign the attack its place
     })
 
 def save_attack(model_id, label, user, success):
     models_c = models_coll()
     attack_id = ObjectId()
+    points = 0
+    if success:
+        model = models.find_one(model_id)
+        points = SCORE_MAP[model['attack_mode']]
     # add attack to model document in db.
     result = models_c.find_one_and_update({
         '_id': model_id
@@ -62,9 +65,11 @@ def save_attack(model_id, label, user, success):
             }
         }
     }, return_document=ReturnDocument.AFTER)
+    attack = result['attacks'][-1]
     # see if inserted document needs to be assigned gold, silver, ect
-    place = len(result['attacks'])
-    if place <= 3:
-        set_place(model_id, place, PLACE_MAP[place])
-    attack = result['attacks'][place - 1]
+    # lmao this gets slower with more and more attacks
+    place = len(list(filter(lambda attack: attack['success'], result['attacks'])))
+    if place <= 3 and success:
+        attack['place'] = PLACE_MAP[place]
+        set_place(attack_id, PLACE_MAP[place])
     return attack
