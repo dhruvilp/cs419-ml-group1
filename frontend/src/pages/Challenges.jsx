@@ -82,6 +82,7 @@ class Challenges extends React.Component {
                   </div>
                 </Col>
                 <Col>
+{/*======== TODO: User "Navs/TabsView" below so user can either download datsets or models =======*/}
                   <div className="mt--9">
                     <Row>
                       <Col>
