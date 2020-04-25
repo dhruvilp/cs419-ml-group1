@@ -1,7 +1,8 @@
-from .db import models_coll
 from bson import ObjectId
 from bson.errors import InvalidId
+
 from . import users
+from .db import models_coll
 
 ATTACK_MODES = ['white', 'gray', 'black']
 class BadAttackMode(Exception):
@@ -29,7 +30,60 @@ def create(name, description, attack_mode, owner):
     return model
 
 def scoreboard(username=None):
-    pass
+    models = models_coll()
+    aggregation = [{'$unwind': '$attacks'}]
+    if username:
+        if not users.exists(username):
+            raise users.NoSuchUser
+        aggregation += [{'$match': {'attacks.user': username}}]
+
+    def count(match):
+        return [{'$match': match},
+                {'$count': 'result'}]
+
+    aggregation += [{'$facet': {
+        'total_successes': count({'attacks.success': True}),
+        'total_attempts': count({}),
+        'gold_medals': count({'attacks.place': 'gold'}),
+        'silver_medals': count({'attacks.place': 'silver'}),
+        'bronze_medals': count({'attacks.place': 'bronze'}),
+        'users': [
+            {'$group': {
+                '_id': {
+                    'user': '$attacks.user',
+                    'model': '$_id'
+                },
+                'name': {'$first': '$name'},
+                'attempts': {'$sum': 1},
+                'successes': {'$sum': {'$cond': {
+                    'if': '$attacks.success',
+                    'then': 1,
+                    'else': 0
+                }}},
+                'points_earned': {'$sum': '$attacks.points'}
+            }},
+            {'$group': {
+                '_id': '$_id.user',
+                'attacked_models': {'$push': {
+                    '_id': '$_id.model',
+                    'name': '$name',
+                    'attempts': '$attempts',
+                    'sucesses': '$sucesses',
+                    'points_earned': '$points_earned'
+                }},
+                'total_points': {'$sum': '$points_earned'},
+                'total_attempts': {'$sum': '$attempts'},
+                'total_successes': {'$sum': '$successes'}
+            }}
+        ]
+    }}]
+    result = list(models.aggregate(aggregation))
+    # output massaging due to $facet
+    result = result[0]
+    for key in ['total_successes', 'total_attempts',
+                'gold_medals', 'silver_medals', 'bronze_medals']:
+        result[key] = result[key][0]['result']
+    return result
 
 def find(query=None, attack_mode=None, user=None):
     models = models_coll()

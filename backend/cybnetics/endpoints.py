@@ -160,3 +160,15 @@ def attempt_attack(_id, user=None):
         return jsonify(result)
     except InvalidId:
         return 'invalid model id', 400
+
+@app.route('/scoreboard', methods=['GET'])
+@require_json_body
+@require_body_jwt
+def scoreboard(user=None):
+    data = request.get_json()
+    search_user = data.get('username')
+    try:
+        scoreboard_data = models.scoreboard(username=search_user)
+    except users.NoSuchUser as e:
+        return str(e), 400
+    return jsonify(scoreboard_data)
