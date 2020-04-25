@@ -19,11 +19,14 @@ class AccessDenied(Exception):
 class BadModelFormat(Exception):
     pass
 
+def model_filename(_id):
+    return utils.get_path('m_' + str(_id) + '.pt')
+
 def store(_id, model_image_file):
     model = models.find_one(_id)
     if not model:
         return InvalidId()
-    filename = utils.get_path('m_' + str(_id))
+    filename = model_filename(_id)
     model_image_file.save(filename)
     try:
         torch.load(filename)
@@ -38,11 +41,16 @@ def store(_id, model_image_file):
 
 
 def get(_id):
-    if not utils.upload_exists('m_' + str(_id)):
+    filename = model_filename(_id)
+    if not path.exists(filename):
         raise ModelNotUploaded()
-    path = utils.get_path('m_' + str(_id))
-    print(path)
-    return send_file(path)
+    return send_file(filename)
+
+def remove(_id):
+    try:
+        os.remove(utils.get_path('m_' + str(_id)))
+    except FileNotFoundError:
+        pass
 
 def can_store(_id, user):
     model = models.find_one(_id)
