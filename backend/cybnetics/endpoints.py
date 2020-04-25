@@ -1,5 +1,6 @@
 from flask import Flask, jsonify, request
 from flask_bcrypt import Bcrypt
+from flask_cors import CORS
 from pymongo import MongoClient, TEXT
 from bson import ObjectId
 from bson.errors import InvalidId
@@ -9,6 +10,7 @@ from .utils import *
 
 
 app = Flask(__name__)
+CORS(app)
 app.config.from_pyfile('./config.py')
 
 
