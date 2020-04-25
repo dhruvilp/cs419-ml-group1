@@ -1,2 +1,4 @@
 env
 cybnetics/config.py
+cybnetics/uploads/*
+uploads/*
