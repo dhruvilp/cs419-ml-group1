@@ -111,7 +111,7 @@ def find_one(_id):
 
 def remove(_id):
     models = models_coll()
-    return models.remove_one(_id)
+    return models.remove(_id)
 
 def is_owner(_id, user):
     model = find_one(_id)

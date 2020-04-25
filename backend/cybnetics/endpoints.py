@@ -5,7 +5,8 @@ from pymongo import MongoClient, TEXT
 from bson import ObjectId
 from bson.errors import InvalidId
 
-from .resources import db, users, models, model_images, model_attacks
+from .resources import db, users, models, \
+    model_images, model_attacks, model_datasets
 from .utils import *
 
 
@@ -109,6 +110,34 @@ def find_models(user=None):
     if len(result) == 0:
         return 'No models matched that query', 404
     return jsonify(result)
+
+@app.route('/models/<_id>', methods=['GET'])
+@require_json_body
+@require_body_jwt
+def get_model(_id, user=None):
+    try:
+        _id = ObjectId(_id)
+        model = models.find_one(_id)
+        if not model:
+            return 'no model found', 404
+        return jsonify(model)
+    except InvalidId:
+        return 'invalid model id', 400
+
+@app.route('/models/<_id>', methods=['DELETE'])
+@require_json_body
+@require_body_jwt
+def remove_model(_id, user=None):
+    try:
+        _id = ObjectId(_id)
+        if not models.is_owner(_id, user):
+            return 'you do not own that model', 403
+        models.remove(_id)
+        model_images.remove(_id)
+        model_datasets.remove(_id)
+        return '', 204
+    except InvalidId:
+        return 'invalid model id', 400
 
 @app.route('/models/<_id>/model', methods=['POST'])
 @require_url_jwt
