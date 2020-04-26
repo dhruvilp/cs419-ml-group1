@@ -5,3 +5,4 @@ Flask-Bcrypt==0.7.1
 Flask-Cors==3.0.8
 torch==1.4.0
 numpy==1.18.3
+opencv-python==4.2.0.34

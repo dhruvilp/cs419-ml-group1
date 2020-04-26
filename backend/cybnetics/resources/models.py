@@ -13,15 +13,26 @@ class BadAttackMode(Exception):
         return 'invalid attack mode ' + self.attack_mode + ' must be in ' \
             + str(ATTACK_MODES)
 
+MODEL_TYPES = ['mnist', 'cifar']
+class BadModelType(Exception):
+    def __init__(self, model_type, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.model_type = model_type
+    def __str__(self):
+        return 'invalid model type ' + self.model_type + ' must be in ' \
+            + str(MODEL_TYPES)
 
-def create(name, description, attack_mode, owner):
+def create(name, description, model_type, attack_mode, owner):
     if not attack_mode in ATTACK_MODES:
         raise BadAttackMode(attack_mode)
+    if not model_type in MODEL_TYPES:
+        raise BadModelType(model_type)
     models = models_coll()
     model = {
         '_id': ObjectId(),
         'name': name,
         'description': description,
+        'model_type': model_type,
         'attack_mode': attack_mode,
         'owner': owner,
         'ready': False

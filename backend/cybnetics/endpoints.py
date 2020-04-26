@@ -30,12 +30,8 @@ def server_test():
 @require_json_body
 def create_user():
     """
-    Function to create new users.
-    **  Notice how I have to import create in the function since db_connect() is not called
-        right away meaning that we have an app RuntimeError: Working outside of application context.
-        in resources/db.py. It may not be a bad thing that we have to import here.
+    Create the user
     """
-
     try:
         data = request.get_json()
         username = data['username']
@@ -79,14 +75,17 @@ def create_model(user=None):
         data = request.get_json()
         name = data['name']
         description = data['description']
+        model_type = data['model_type']
         attack_mode = data['attack_mode']
     except Exception as e:
         return 'missing parameter' + str(e), 400
 
     try:
-        model = models.create(name, description, attack_mode, user)
+        model = models.create(name, description, model_type, attack_mode, user)
         return jsonify(model)
     except models.BadAttackMode as e:
+        return str(e), 400
+    except models.BadModelType as e:
         return str(e), 400
 
 @app.route('/models', methods=['GET'])
@@ -225,6 +224,8 @@ def attempt_attack(_id, user=None):
         return jsonify(result)
     except InvalidId:
         return 'invalid model id', 400
+    except model_attacks.InvalidAttack as e:
+        return str(e), 400
 
 @app.route('/scoreboard', methods=['GET'])
 @require_json_body
