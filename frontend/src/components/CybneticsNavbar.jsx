@@ -97,6 +97,13 @@ class CybneticsNavbar extends React.Component {
                       </NavLink>
                     </NavItem>
                   }
+                  {!isAdmin &&
+                    <NavItem>
+                      <NavLink href="/userDashboard">
+                        Dashboard
+                      </NavLink>
+                    </NavItem>
+                  }
                   <NavItem>
                     <NavLink href="/leaderboard">
                       Leaderboard
