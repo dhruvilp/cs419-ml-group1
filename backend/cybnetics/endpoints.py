@@ -171,6 +171,36 @@ def download_model(_id, user=None):
         return 'model not found', 404
     return '', 204
 
+@app.route('/models/<_id>/dataset', methods=['POST'])
+@require_url_jwt
+@require_admin
+def upload_dataset(_id, user=None):
+    f = request.files.get('dataset')
+    if not f:
+        return 'missing file named "dataset"', 400
+    try:
+        _id = ObjectId(_id)
+        if not model_datasets.can_store(_id, user):
+            return 'you don\'t own that model', 403
+        model_datasets.store(_id, f)
+    except InvalidId:
+        return 'invalid model id', 400
+    return '', 204
+
+@app.route('/models/<_id>/dataset', methods=['GET'])
+@require_json_body
+@require_body_jwt
+def download_dataset(_id, user=None):
+    try:
+        _id = ObjectId(_id)
+        if not model_datasets.can_get(_id, user): # todo what if id not exists
+            return 'You lack permissions needed to download that model', 403
+
+        return model_datasets.get(_id)
+    except InvalidId:
+        return 'model not found', 404
+    return '', 204
+
 @app.route('/models/<_id>/attack', methods=['POST'])
 @require_url_jwt
 def attempt_attack(_id, user=None):

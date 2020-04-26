@@ -5,9 +5,8 @@ from bson.errors import InvalidId
 from flask import current_app, send_file
 import torch
 
-from .db import models_coll
 from . import models
-import cybnetics.utils as utils
+from cybnetics.utils import model_filename, dataset_filename
 
 
 class ModelNotUploaded(Exception):
@@ -18,9 +17,6 @@ class AccessDenied(Exception):
 
 class BadModelFormat(Exception):
     pass
-
-def model_filename(_id):
-    return utils.get_path('m_' + str(_id) + '.pt')
 
 def store(_id, model_image_file):
     model = models.find_one(_id)
@@ -34,11 +30,9 @@ def store(_id, model_image_file):
         os.remove(filename)
         raise BadModelFormat
 
-    if model['attack_mode'] == 'white' \
-       and not utils.upload_exists('d_' + str(_id)):
-        return
-    models_coll().update_one({'_id': _id}, {'$set': {'ready': True}})
-
+    if model['attack_mode'] == 'black' or \
+       path.exists(dataset_filename(_id)):
+        models.set_ready(_id)
 
 def get(_id):
     filename = model_filename(_id)
@@ -48,7 +42,7 @@ def get(_id):
 
 def remove(_id):
     try:
-        os.remove(utils.get_path('m_' + str(_id)))
+        os.remove(model_filename(_id))
     except FileNotFoundError:
         pass
 

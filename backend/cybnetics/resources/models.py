@@ -118,3 +118,6 @@ def is_owner(_id, user):
     if not model:
         return False
     return model['owner'] == user
+
+def set_ready(_id):
+    models_coll().update_one({'_id': _id}, {'$set': {'ready': True}})
