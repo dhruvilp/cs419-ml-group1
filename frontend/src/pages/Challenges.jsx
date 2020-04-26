@@ -60,7 +60,8 @@ class Challenges extends React.Component {
     a.download = file_path;
     document.body.appendChild(a);
     a.click();
-    document.body.removeChild(a);*/
+    document.body.removeChild(a);
+    */
   }
 
   render() {
