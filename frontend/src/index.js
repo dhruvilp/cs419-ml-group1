@@ -14,6 +14,7 @@ import Openground from "pages/Openground";
 import Challenges from "pages/Challenges";
 import Dashboard from "pages/Dashboard";
 import { RestrictedRoute } from "components/RestrictedRoute";
+import UserDashboard from "pages/UserDashboard";
 
 ReactDOM.render(
   <React.StrictMode>
@@ -38,6 +39,11 @@ ReactDOM.render(
           exact 
           path="/openground" 
           component={Openground} 
+        />
+        <RestrictedRoute 
+          exact 
+          path="/userDashboard" 
+          component={UserDashboard} 
         />
         <RestrictedRoute 
           exact 
