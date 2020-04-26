@@ -20,6 +20,15 @@ class Challenges extends React.Component {
     this.toggleNavs = this.toggleNavs.bind(this);
   }
 
+  componentDidMount() {
+    document.documentElement.scrollTop = 0;
+    document.scrollingElement.scrollTop = 0;
+    this.refs.main.scrollTop = 0;
+    this.setState({
+      user: JSON.parse(localStorage.getItem('user'))
+    });
+  }
+
   toggleNavs = (e, state, index) => {
     e.preventDefault();
     this.setState({
@@ -54,15 +63,6 @@ class Challenges extends React.Component {
     document.body.removeChild(a);*/
   }
 
-  componentDidMount() {
-    document.documentElement.scrollTop = 0;
-    document.scrollingElement.scrollTop = 0;
-    this.refs.main.scrollTop = 0;
-    this.setState({
-      user: JSON.parse(localStorage.getItem('user'))
-    });
-  }
-
   render() {
     return (
       <>
@@ -95,7 +95,6 @@ class Challenges extends React.Component {
                   </div>
                 </Col>
                 <Col>
-{/*======== TODO: User "Navs/TabsView" below so user can either download datsets or models =======*/}
                   <div className="mt--9">
                     <Nav
                       className="nav-fill flex-column flex-md-row"
@@ -131,6 +130,10 @@ class Challenges extends React.Component {
                     </NavItem>
                     </Nav>
                   </div>
+
+                  {/*========================================
+                                  DATASET TAB 
+                   =========================================*/}
                   <div className="mt-5">
                     <Card className="bg-secondary shadow border-0">
                       <CardBody >
@@ -168,6 +171,10 @@ class Challenges extends React.Component {
                         </div>
                           </TabPane>
                         </TabContent>
+
+                        {/*========================================
+                                        ML MODEL TAB 
+                         =========================================*/}
                         <TabContent activeTab={"tabs" + this.state.tabs}>
                           <TabPane tabId="tabs2">
                             <p>
