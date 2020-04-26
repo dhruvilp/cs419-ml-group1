@@ -50,7 +50,8 @@ class Login extends React.Component {
       .then(
         (user) => {
           var jwt = require('jsonwebtoken');
-          var isAdmin = jwt.decode(JSON.parse(localStorage.getItem('user'))['token']);
+          var isAdmin = jwt.decode(JSON.parse(localStorage.getItem('user'))['token'])['admin'];
+          console.log(isAdmin);
           if(isAdmin){
             const { from } = this.props.location.state || { from: { pathname: "/dashboard" } };
             this.props.history.push(from);

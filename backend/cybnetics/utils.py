@@ -66,3 +66,9 @@ def get_path(filename):
 
 def upload_exists(filename):
     return path.exists(get_path(filename))
+
+def dataset_filename(_id):
+    return get_path('d_' + str(_id) + '.zip')
+
+def model_filename(_id):
+    return get_path('m_' + str(_id) + '.pt')
