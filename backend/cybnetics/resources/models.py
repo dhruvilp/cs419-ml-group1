@@ -31,7 +31,8 @@ def create(name, description, attack_mode, owner):
 
 def scoreboard(username=None):
     models = models_coll()
-    aggregation = [{'$unwind': '$attacks'}]
+    aggregation = [{'$match': {'ready': True}},
+                   {'$unwind': '$attacks'}]
     if username:
         if not users.exists(username):
             raise users.NoSuchUser
@@ -82,12 +83,18 @@ def scoreboard(username=None):
     result = result[0]
     for key in ['total_successes', 'total_attempts',
                 'gold_medals', 'silver_medals', 'bronze_medals']:
-        result[key] = result[key][0]['result']
+        try:
+            result[key] = result[key][0]['result']
+        except:
+            result[key] = 0
     return result
 
-def find(query=None, attack_mode=None, user=None):
+def find(query=None, attack_mode=None, user=None, ready=True):
     models = models_coll()
     db_query = {}
+
+    if ready is not None:
+        db_query['ready'] = ready
 
     if attack_mode:
         if not attack_mode in ATTACK_MODES:

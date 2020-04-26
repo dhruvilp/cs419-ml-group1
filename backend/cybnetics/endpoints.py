@@ -99,9 +99,15 @@ def find_models(user=None):
     query = data.get('query')
     target_user = data.get('user')
     attack_mode = data.get('attack_mode')
+    ready = True
+    if target_user == user:
+        ready = None
 
     try:
-        result = models.find(query=query, attack_mode=attack_mode, user=target_user)
+        result = models.find(query=query,
+                             attack_mode=attack_mode,
+                             user=target_user,
+                             ready=ready)
     except users.NoSuchUser as e:
         return str(e), 404
     except models.BadAttackMode as e:
