@@ -1,5 +1,6 @@
 import React from "react";
-import { Card, Container, Row, Col, Button, CardBody} from "reactstrap";
+import { Card, Container, Row, Col, Button, CardBody, Nav, NavItem, NavLink, TabContent, TabPane} from "reactstrap";
+import classnames from "classnames";
 
 import CybneticsNavbar from "components/CybneticsNavbar";
 import CybneticsFooter from "components/CybneticsFooter";
@@ -10,24 +11,36 @@ class Challenges extends React.Component {
   constructor(props){
     super(props);
     this.state = {
+      tabs: 1,
       user: {}
     };
+    
     this.downloadDatasets = this.downloadDatasets.bind(this);
     this.downloadModels = this.downloadModels.bind(this);
+    this.toggleNavs = this.toggleNavs.bind(this);
   }
 
-  downloadDatasets(){
+  toggleNavs = (e, state, index) => {
+    e.preventDefault();
+    this.setState({
+      [state]: index
+    });
+  };
 
-    //test for downloading a file
-    /*
-    var file_path = 'pages/test.txt';
-    var a = document.createElement('A');
-    a.href = file_path;
-    a.download = file_path;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);*/
-    
+  downloadDatasets(){
+    console.log("here");
+    var file = 'text.txt'
+    var blob = new Blob([ file ], {
+      type : "text"
+    });
+    var link = document.createElement("a");
+    var t = URL.createObjectURL(blob);
+    link.href = t;
+    link.style = "visibility:hidden";
+    link.download = 'text.txt';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   }
 
   downloadModels(){
@@ -84,22 +97,49 @@ class Challenges extends React.Component {
                 <Col>
 {/*======== TODO: User "Navs/TabsView" below so user can either download datsets or models =======*/}
                   <div className="mt--9">
-                    <Row>
-                      <Col>
-                      <Button color="success" type="button" size="lg" onClick={this.downloadDatasets}>Download Datasets</Button>
-                      </Col>
-                      <Col>
-                      <Button color="secondary" type="button" size="lg" onClick={this.downloadModels}>Download ML Models</Button>
-                      </Col>
-                    </Row>
+                    <Nav
+                      className="nav-fill flex-column flex-md-row"
+                      id="tabs-icons-text"
+                      pills
+                      role="tablist"
+                    >
+                      <NavItem>
+                        <NavLink
+                          aria-selected={this.state.tabs === 1}
+                          className={classnames("mb-sm-3 mb-md-0", {
+                          active: this.state.tabs === 1
+                          })}
+                          onClick={e => this.toggleNavs(e, "tabs", 1)}
+                          href="#pablo"
+                          role="tab"
+                        >
+                        Download Datasets
+                      </NavLink>
+                    </NavItem>
+                    <NavItem>
+                        <NavLink
+                          aria-selected={this.state.tabs === 2}
+                          className={classnames("mb-sm-3 mb-md-0", {
+                          active: this.state.tabs === 2
+                          })}
+                          onClick={e => this.toggleNavs(e, "tabs", 2)}
+                          href="#pablo"
+                          role="tab"
+                        >
+                        Download ML Models
+                      </NavLink>
+                    </NavItem>
+                    </Nav>
                   </div>
                   <div className="mt-5">
                     <Card className="bg-secondary shadow border-0">
                       <CardBody >
-                        <div>
+                        <TabContent activeTab={"tabs" + this.state.tabs}>
+                          <TabPane tabId="tabs1">
+                          <div>
                           <h1>
                             MNIST
-                            <Button className="btn-icon btn-3 ml-8" color="primary" type="button">
+                            <Button className="btn-icon btn-3 ml-8" color="primary" type="button" onClick={this.downloadDatasets}>
                               <span className="btn-inner--icon">
                                 <i className="fa fa-download"></i>
                               </span>
@@ -126,9 +166,20 @@ class Challenges extends React.Component {
                           with 6000 images per class. There are 50000 training images….
                           </h5>
                         </div>
+                          </TabPane>
+                        </TabContent>
+                        <TabContent activeTab={"tabs" + this.state.tabs}>
+                          <TabPane tabId="tabs2">
+                            <p>
+                              Download ML Models...
+                            </p>
+                          </TabPane>
+                        </TabContent>
                       </CardBody> 
                     </Card>
                   </div>
+                        
+                      
                 </Col>
               </Row>
             </Container>
