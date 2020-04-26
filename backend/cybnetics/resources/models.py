@@ -1,5 +1,6 @@
 from .db import models_coll
 from bson import ObjectId
+from bson.errors import InvalidId
 from . import users
 
 ATTACK_MODES = ['white', 'gray', 'black']
@@ -50,7 +51,16 @@ def find(query=None, attack_mode=None, user=None):
     return list(models.find(db_query))
 
 def find_one(_id):
-    pass
+    models = models_coll()
+    model = models.find_one({'_id': _id})
+    return model
 
-def remove(_id, user):
-    pass
+def remove(_id):
+    models = models_coll()
+    return models.remove_one(_id)
+
+def is_owner(_id, user):
+    model = find_one(_id)
+    if not model:
+        return False
+    return model['owner'] == user
