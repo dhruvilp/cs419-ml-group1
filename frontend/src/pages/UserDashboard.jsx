@@ -1,6 +1,6 @@
 import React from "react";
 import { Card, Container, Form, Input, Button, Row, Col, CardHeader, CardBody, Modal, 
-  ListGroup, Badge, Nav, NavItem, NavLink, FormGroup, Label, CustomInput} from "reactstrap";
+  ListGroup, Nav, NavItem, NavLink, FormGroup, CustomInput} from "reactstrap";
 
 import CybneticsNavbar from "components/CybneticsNavbar";
 import CybneticsFooter from "components/CybneticsFooter";
@@ -11,7 +11,7 @@ class UserDashboard extends React.Component {
     super(props);
     this.state = {
       selectedFile: null,
-      exampleModal: false,
+      confirmationModal: false,
     }
     this.handleComfirmation = this.handleComfirmation.bind(this);
   }
@@ -61,20 +61,20 @@ class UserDashboard extends React.Component {
                             <CustomInput type="file" id="exampleCustomFileBrowser" name="file" onChange={this.onChangeHandler}/>
                           </FormGroup>
                         </Col>
-                        <Col>
-                        <Button className="btn-icon btn-3 float-right" color="primary" type="button" onClick={() => this.toggleModal("exampleModal")}>
-                          Upload
-                        </Button>
+                        <Col lg="2">
+                          <Button className="btn-icon btn-3 float-right" color="primary" type="button" onClick={() => this.toggleModal("confirmationModal")}>
+                            Upload
+                          </Button>
                         </Col>
                       </Row>
                         <Col className="ml-9">
                           <Modal
                             className="modal-dialog-centered"
-                            isOpen={this.state.exampleModal}
-                            toggle={() => this.toggleModal("exampleModal")}
+                            isOpen={this.state.confirmationModal}
+                            toggle={() => this.toggleModal("confirmationModal")}
                           >
                             <div className="modal-header">
-                              <h5 className="modal-title" id="exampleModalLabel">
+                              <h5 className="modal-title" id="confirmationModalLabel">
                                  Confirmation
                               </h5>
                               <button
@@ -82,7 +82,7 @@ class UserDashboard extends React.Component {
                                 className="close"
                                 data-dismiss="modal"
                                 type="button"
-                                onClick={() => this.toggleModal("exampleModal")}
+                                onClick={() => this.toggleModal("confirmationModal")}
                               >
                                 <span aria-hidden={true}>×</span>
                               </button>
@@ -91,7 +91,7 @@ class UserDashboard extends React.Component {
                               <Form>
                                 <div className="mb-2">
                                   <Input required
-                                  placeholder="Name" 
+                                  placeholder="Model Name" 
                                   id="name"
                                   type="text" 
                                   
@@ -100,7 +100,7 @@ class UserDashboard extends React.Component {
                                 </div>
                                 <div className="mb-2">
                                   <Input required
-                                  placeholder="Description" 
+                                  placeholder="Model Description" 
                                   id="description"
                                   type="text" 
                                   onChange={this.handleChange}
@@ -108,16 +108,16 @@ class UserDashboard extends React.Component {
                                 </div>
                                 <div className="mb-2">
                                   <Input required
-                                  placeholder="Accuracy of your model" 
+                                  placeholder="Accuracy of your model (Ex: .90)" 
                                   id="acc"
-                                  type="text" 
+                                  type="number" 
                                   onChange={this.handleChange}
                                   />
                                 </div>
                               </Form>
                             </div>
                             <div className="modal-footer">
-                              <Button className="btn-icon btn-3 ml-8" color="primary" type="button" onClick={this.handleComfirmation}>
+                              <Button className="btn-icon btn-3 ml-8" color="primary" type="button" onClick={() => this.toggleModal("confirmationModal")}>
                                 Submit
                               </Button>
                             </div>
