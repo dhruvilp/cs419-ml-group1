@@ -1,5 +1,6 @@
 import React from "react";
-import { Card, Container, Form, Input, Button, Row, Col, CardHeader, CardBody, Modal, ListGroup, Badge, Nav, NavItem, NavLink} from "reactstrap";
+import { Card, Container, Form, Input, Button, Row, Col, CardHeader, CardBody, Modal, 
+  ListGroup, Badge, Nav, NavItem, NavLink, FormGroup, Label, CustomInput} from "reactstrap";
 
 import CybneticsNavbar from "components/CybneticsNavbar";
 import CybneticsFooter from "components/CybneticsFooter";
@@ -55,19 +56,18 @@ class UserDashboard extends React.Component {
                 <CardHeader className="card-header mt-2">
                   <Form role="form">
                       <Row>
-                        <Col lg={{size: "auto"}}>
-                         <Input type='file' name="file" onChange={this.onChangeHandler}>
-                         </Input>
+                        <Col>
+                          <FormGroup>
+                            <CustomInput type="file" id="exampleCustomFileBrowser" name="file" onChange={this.onChangeHandler}/>
+                          </FormGroup>
                         </Col>
-                        <Col lg={{size: "auto"}}>
-                          <p>
-                            Upload your trained model here...
-                          </p>
+                        <Col>
+                        <Button className="btn-icon btn-3 float-right" color="primary" type="button" onClick={() => this.toggleModal("exampleModal")}>
+                          Upload
+                        </Button>
                         </Col>
-                        <Col  className="ml-9">
-                          <Button className="btn-icon" size="lg" color="primary" onClick={() => this.toggleModal("exampleModal")}>
-                            Upload
-                          </Button>
+                      </Row>
+                        <Col className="ml-9">
                           <Modal
                             className="modal-dialog-centered"
                             isOpen={this.state.exampleModal}
@@ -123,7 +123,7 @@ class UserDashboard extends React.Component {
                             </div>
                           </Modal>
                         </Col>
-                       </Row>
+                       
                     </Form>
                 </CardHeader>
                 <CardBody>
@@ -135,8 +135,7 @@ class UserDashboard extends React.Component {
                 </CardBody>
                 <CardBody>
                  <ListGroup>
-                    <MlModelTile datasetName="1. MNIST (model tf-68)" />
-                    <MlModelTile datasetName="2. CIFAR-10 (model tf-45)" />
+                    
                   </ListGroup>
                 </CardBody>
               </Card>
