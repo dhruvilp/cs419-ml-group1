@@ -1,6 +1,13 @@
 import torch.nn as nn
 import torch.nn.functional as F
 
+class BadModelSpec(Exception):
+    def __init__(self, message, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.message = message
+    def __str__(self):
+        return 'bad model spec :' + self.message
+
 class ViewAdapter:
     """hack to allow use of view in forward function"""
     def __init__(self, *args, **kwargs):
@@ -107,3 +114,4 @@ def make_cfair10_example():
     ],[
         {'type': 'MaxPool2d', 'args': [2, 2]}
     ])
+        

@@ -8,6 +8,7 @@ from bson.errors import InvalidId
 from .resources import db, users, models, \
     model_images, model_attacks, model_datasets
 from .utils import *
+from .model_builder import BadModelSpec
 
 
 app = Flask(__name__)
@@ -75,13 +76,14 @@ def create_model(user=None):
         data = request.get_json()
         name = data['name']
         description = data['description']
-        model_type = data['model_type']
+        layers = data['layers']
+        # pools is optional
         attack_mode = data['attack_mode']
     except Exception as e:
         return 'missing parameter' + str(e), 400
 
     try:
-        model = models.create(name, description, model_type, attack_mode, user)
+        model = models.create(owner=user, **data)
         return jsonify(model)
     except models.BadAttackMode as e:
         return str(e), 400
@@ -125,6 +127,9 @@ def get_model(_id, user=None):
         model = models.find_one(_id)
         if not model:
             return 'no model found', 404
+        if not (model['attack_mode'] == 'white' or model['owner'] == user):
+            del model['pools']
+            del model['layers']
         return jsonify(model)
     except InvalidId:
         return 'invalid model id', 400

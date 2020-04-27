@@ -3,6 +3,7 @@ from bson.errors import InvalidId
 
 from . import users
 from .db import models_coll
+from cybnetics.model_builder import make_model_class
 
 ATTACK_MODES = ['white', 'gray', 'black']
 class BadAttackMode(Exception):
@@ -21,18 +22,24 @@ class BadModelType(Exception):
     def __str__(self):
         return 'invalid model type ' + self.model_type + ' must be in ' \
             + str(MODEL_TYPES)
-
-def create(name, description, model_type, attack_mode, owner):
+    
+def create(name=None, description=None, attack_mode=None, owner=None,
+           layers=None, pools=[], **kwargs):
+    for param in [name, description, attack_mode, owner, layers]:
+        if param is None:
+            raise ValueError('missing required param to create')
+    
     if not attack_mode in ATTACK_MODES:
         raise BadAttackMode(attack_mode)
-    if not model_type in MODEL_TYPES:
-        raise BadModelType(model_type)
+    # validate by making class and see if it throws an error
+    make_model_class(layers, pools)
     models = models_coll()
     model = {
         '_id': ObjectId(),
         'name': name,
         'description': description,
-        'model_type': model_type,
+        'layers': layers,
+        'pools': pools,
         'attack_mode': attack_mode,
         'owner': owner,
         'ready': False
@@ -120,7 +127,10 @@ def find(query=None, attack_mode=None, user=None, ready=True):
     if query:
         db_query['$text'] = {'$search': query}
 
-    return list(models.find(db_query))
+    return list(models.find(db_query, projection={
+        'layers': False,
+        'pools': False
+    }))
 
 def find_one(_id):
     models = models_coll()
