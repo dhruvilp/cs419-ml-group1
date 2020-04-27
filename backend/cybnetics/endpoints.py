@@ -71,7 +71,7 @@ def login():
 
 @app.route('/models', methods=['POST'])
 @require_json_body
-@require_body_jwt
+@require_login
 @require_admin
 def create_model(user=None):
     """endpoint for creating models"""
@@ -91,7 +91,7 @@ def create_model(user=None):
 
 @app.route('/models', methods=['GET'])
 @require_json_body
-@require_body_jwt
+@require_login
 def find_models(user=None):
     """endpoint for searching through models"""
 
@@ -119,7 +119,7 @@ def find_models(user=None):
 
 @app.route('/models/<_id>', methods=['GET'])
 @require_json_body
-@require_body_jwt
+@require_login
 def get_model(_id, user=None):
     try:
         _id = ObjectId(_id)
@@ -132,7 +132,7 @@ def get_model(_id, user=None):
 
 @app.route('/models/<_id>', methods=['DELETE'])
 @require_json_body
-@require_body_jwt
+@require_login
 def remove_model(_id, user=None):
     try:
         _id = ObjectId(_id)
@@ -146,7 +146,7 @@ def remove_model(_id, user=None):
         return 'invalid model id', 400
 
 @app.route('/models/<_id>/model', methods=['POST'])
-@require_url_jwt
+@require_login
 @require_admin
 def upload_model(_id, user=None):
     f = request.files.get('model')
@@ -165,7 +165,7 @@ def upload_model(_id, user=None):
 
 @app.route('/models/<_id>/model', methods=['GET'])
 @require_json_body
-@require_body_jwt
+@require_login
 def download_model(_id, user=None):
     try:
         _id = ObjectId(_id)
@@ -178,7 +178,7 @@ def download_model(_id, user=None):
     return '', 204
 
 @app.route('/models/<_id>/dataset', methods=['POST'])
-@require_url_jwt
+@require_login
 @require_admin
 def upload_dataset(_id, user=None):
     f = request.files.get('dataset')
@@ -195,7 +195,7 @@ def upload_dataset(_id, user=None):
 
 @app.route('/models/<_id>/dataset', methods=['GET'])
 @require_json_body
-@require_body_jwt
+@require_login
 def download_dataset(_id, user=None):
     try:
         _id = ObjectId(_id)
@@ -208,7 +208,7 @@ def download_dataset(_id, user=None):
     return '', 204
 
 @app.route('/models/<_id>/attack', methods=['POST'])
-@require_url_jwt
+@require_login
 def attempt_attack(_id, user=None):
     try:
         _id = ObjectId(_id)
@@ -227,8 +227,7 @@ def attempt_attack(_id, user=None):
         return 'invalid model id', 400
 
 @app.route('/scoreboard', methods=['GET'])
-@require_json_body
-@require_body_jwt
+@require_login
 def scoreboard(user=None):
     data = request.get_json()
     search_user = data.get('username')
