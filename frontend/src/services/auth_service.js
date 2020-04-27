@@ -1,10 +1,10 @@
+const BASE_URL = 'http://127.0.0.1:5000';
+
 export const authService = {
     login,
     signup,
     logout
 };
-
-const BASE_URL = 'http://127.0.0.1:5000';
 
 async function login(username, password) {
     const requestOptions = {
