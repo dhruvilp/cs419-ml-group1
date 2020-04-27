@@ -1,5 +1,5 @@
 import React from "react";
-import { Badge, Card, Container, Row, Col } from "reactstrap";
+import { Badge, Card, Container, Row, Col, Table } from "reactstrap";
 
 import CybneticsNavbar from "components/CybneticsNavbar";
 import CybneticsFooter from "components/CybneticsFooter";
@@ -85,9 +85,40 @@ class Leaderboard extends React.Component {
                   </div>
                   <div className="text-center mt-5">
                     <Container>
-                      <h6>
-                        Leaderboard Table
-                      </h6>
+                      <Table striped>
+                        <thead>
+                          <tr>
+                            <th width="40">#</th>
+                            <th style={{"text-align": "initial"}}>Username</th>
+                            <th width="50">Total Points</th>
+                            <th width="50">Total Attempts</th>
+                            <th width="50">Total Sucesses</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr>
+                            <th scope="row">1</th>
+                            <td style={{"text-align": "initial"}}>DeepCNet</td>
+                            <td>1500</td>
+                            <td>2</td>
+                            <td>1</td>
+                          </tr>
+                          <tr>
+                            <th scope="row">2</th>
+                            <td style={{"text-align": "initial"}}>FrankSharp</td>
+                            <td>800</td>
+                            <td>2</td>
+                            <td>2</td>
+                          </tr>
+                          <tr>
+                            <th scope="row">3</th>
+                            <td style={{"text-align": "initial"}}>MooseBot</td>
+                            <td>300</td>
+                            <td>2</td>
+                            <td>1</td>
+                          </tr>
+                        </tbody>
+                      </Table>
                     </Container>
                   </div>
                 </div>
