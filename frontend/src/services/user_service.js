@@ -8,10 +8,13 @@ export const userService = {
     getModelDescription,
     downloadMlModel,
     downloadDataset,
-    adminPublishNewModel
+    adminPublishNewModel,
+    uploadTrainedModel,
+    uploadDataset,
+    uploadFileToAttack
 };
 
-const authToken = jwt.decode(JSON.parse(localStorage.getItem('user'))['token']);
+const authToken = JSON.parse(localStorage.getItem('user'))['token'];
 
 //=================== GET SCORECARD DATA ====================
 async function getLeaderboard() {
@@ -84,7 +87,7 @@ async function downloadDataset(id) {
     return downloadedDataset;
 }
 
-//=============== DOWNLOAD DATASET ==================
+//=============== ADMIN PUBLISH NEW MODEL ==================
 async function adminPublishNewModel(name, description, type, mode) {
     const requestOptions = {
         method: 'POST',
@@ -100,6 +103,52 @@ async function adminPublishNewModel(name, description, type, mode) {
     const response = await fetch(`${BASE_URL}/models`, requestOptions);
     const downloadedDataset = await handleResponse(response);
     return downloadedDataset;
+}
+
+//=============== UPLOAD TRAINED MODEL ==================
+async function uploadTrainedModel(id) {
+    const requestOptions = {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+            "token" : authToken
+            // static_dict / ML Model YET to be implemented
+        })
+    };
+    const response = await fetch(`${BASE_URL}/models/${id}/model`, requestOptions);
+    const uploadedTrainedModel = await handleResponse(response);
+    return uploadedTrainedModel;
+}
+
+//=============== UPLOAD DATSET ==================
+async function uploadDataset(id) {
+    const requestOptions = {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+            "token" : authToken
+            // dataset file required, YET to be implemented
+        })
+    };
+    const response = await fetch(`${BASE_URL}/models/${id}/dataset`, requestOptions);
+    const uploadedDataset = await handleResponse(response);
+    return uploadedDataset;
+}
+
+//=============== UPLOAD DATSET ==================
+async function uploadFileToAttack(id) {
+    const requestOptions = {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+            "token" : authToken,
+            "label": "ORIGINAL_LABEL" // YET TO CHANGE
+            // model or image file required, YET to be implemented
+        })
+    };
+    const response = await fetch(`${BASE_URL}/models/${id}/attack`, requestOptions);
+    const uploadedAttackFile = await handleResponse(response);
+    return uploadedAttackFile;
 }
 
 
