@@ -32,7 +32,6 @@ class Leaderboard extends React.Component {
         silver_medals : data['silver_medals'],
         bronze_medals : data['bronze_medals']
       });
-      console.log(data);
     })
     .catch((error) => {
       console.log(error);

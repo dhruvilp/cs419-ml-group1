@@ -20,14 +20,16 @@ if(getStoredCred !== null){
     authToken = getStoredCred['token'];
 }
 
+const kHeaders = new Headers({
+    'Content-Type': 'application/json',
+    'Cybnetics-Token': authToken 
+  });
+
 //=================== GET SCORECARD DATA ====================
 async function getLeaderboard() {
     const requestOptions = {
         method: 'GET',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ 
-            "token" : authToken
-        })
+        headers: kHeaders
     };
     const response = await fetch(`${BASE_URL}/scoreboard`, requestOptions);
     const scoreboardData = await handleResponse(response);
@@ -38,13 +40,9 @@ async function getLeaderboard() {
 async function getListOfModels(username) {
     const requestOptions = {
         method: 'GET',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ 
-            "token" : authToken,
-            "user": username
-        })
+        headers: kHeaders
     };
-    const response = await fetch(`${BASE_URL}/models`, requestOptions);
+    const response = await fetch(`${BASE_URL}/models?user=${username}`, requestOptions);
     const listOfModels = await handleResponse(response);
     return listOfModels;
 }
@@ -53,7 +51,7 @@ async function getListOfModels(username) {
 async function getModelDescription(id) {
     const requestOptions = {
         method: 'GET',
-        headers: { 'Content-Type': 'application/json' },
+        headers: kHeaders,
         body: JSON.stringify({ 
             "token" : authToken
         })
@@ -67,7 +65,7 @@ async function getModelDescription(id) {
 async function downloadMlModel(id) {
     const requestOptions = {
         method: 'GET',
-        headers: { 'Content-Type': 'application/json' },
+        headers: kHeaders,
         body: JSON.stringify({ 
             "token" : authToken
         })
@@ -81,7 +79,7 @@ async function downloadMlModel(id) {
 async function downloadDataset(id) {
     const requestOptions = {
         method: 'GET',
-        headers: { 'Content-Type': 'application/json' },
+        headers: kHeaders,
         body: JSON.stringify({ 
             "token" : authToken
         })
@@ -95,7 +93,7 @@ async function downloadDataset(id) {
 async function adminPublishNewModel(name, description, type, mode) {
     const requestOptions = {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: kHeaders,
         body: JSON.stringify({ 
             "token" : authToken,
             "name": name,
@@ -113,7 +111,7 @@ async function adminPublishNewModel(name, description, type, mode) {
 async function uploadTrainedModel(id) {
     const requestOptions = {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: kHeaders,
         body: JSON.stringify({ 
             "token" : authToken
             // static_dict / ML Model YET to be implemented
@@ -128,7 +126,7 @@ async function uploadTrainedModel(id) {
 async function uploadDataset(id) {
     const requestOptions = {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: kHeaders,
         body: JSON.stringify({ 
             "token" : authToken
             // dataset file required, YET to be implemented
@@ -143,7 +141,7 @@ async function uploadDataset(id) {
 async function uploadFileToAttack(id) {
     const requestOptions = {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: kHeaders,
         body: JSON.stringify({ 
             "token" : authToken,
             "label": "ORIGINAL_LABEL" // YET TO CHANGE

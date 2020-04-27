@@ -135,7 +135,7 @@ class UserDashboard extends React.Component {
                 </CardBody>
                 <CardBody>
                  <ListGroup>
-                    
+                    <MlModelTile />
                   </ListGroup>
                 </CardBody>
               </Card>

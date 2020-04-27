@@ -18,7 +18,7 @@ class UploadButtons extends React.Component {
         <Row>
           <Col className="mb-5 mb-md-0" md="6">
             <Card className="card-lift--hover bg-transparent shadow border-0 mt--300">
-              <Link onClick={() => this.toggleModal("datasetModal")}>
+              <Link to="#" onClick={() => this.toggleModal("datasetModal")}>
                 <CardImg
                   alt="..."
                   src={require("assets/img/upload_dataset_icon.png")}
@@ -28,7 +28,7 @@ class UploadButtons extends React.Component {
           </Col>
           <Col className="mb-5 mb-lg-0" md="6">
             <Card className="card-lift--hover bg-transparent shadow border-0 mt--300">
-              <Link onClick={() => this.toggleModal("modelModal")}>
+              <Link to="#" onClick={() => this.toggleModal("modelModal")}>
                 <CardImg
                   alt="..."
                   src={require("assets/img/upload_model_icon.png")}
