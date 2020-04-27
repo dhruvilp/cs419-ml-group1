@@ -5,7 +5,8 @@ from pymongo import MongoClient, TEXT
 from bson import ObjectId
 from bson.errors import InvalidId
 
-from .resources import db, users, models, model_images, model_attacks
+from .resources import db, users, models, \
+    model_images, model_attacks, model_datasets
 from .utils import *
 
 
@@ -98,9 +99,15 @@ def find_models(user=None):
     query = data.get('query')
     target_user = data.get('user')
     attack_mode = data.get('attack_mode')
+    ready = True
+    if target_user == user:
+        ready = None
 
     try:
-        result = models.find(query=query, attack_mode=attack_mode, user=target_user)
+        result = models.find(query=query,
+                             attack_mode=attack_mode,
+                             user=target_user,
+                             ready=ready)
     except users.NoSuchUser as e:
         return str(e), 404
     except models.BadAttackMode as e:
@@ -109,6 +116,34 @@ def find_models(user=None):
     if len(result) == 0:
         return 'No models matched that query', 404
     return jsonify(result)
+
+@app.route('/models/<_id>', methods=['GET'])
+@require_json_body
+@require_body_jwt
+def get_model(_id, user=None):
+    try:
+        _id = ObjectId(_id)
+        model = models.find_one(_id)
+        if not model:
+            return 'no model found', 404
+        return jsonify(model)
+    except InvalidId:
+        return 'invalid model id', 400
+
+@app.route('/models/<_id>', methods=['DELETE'])
+@require_json_body
+@require_body_jwt
+def remove_model(_id, user=None):
+    try:
+        _id = ObjectId(_id)
+        if not models.is_owner(_id, user):
+            return 'you do not own that model', 403
+        models.remove(_id)
+        model_images.remove(_id)
+        model_datasets.remove(_id)
+        return '', 204
+    except InvalidId:
+        return 'invalid model id', 400
 
 @app.route('/models/<_id>/model', methods=['POST'])
 @require_url_jwt
@@ -142,6 +177,36 @@ def download_model(_id, user=None):
         return 'model not found', 404
     return '', 204
 
+@app.route('/models/<_id>/dataset', methods=['POST'])
+@require_url_jwt
+@require_admin
+def upload_dataset(_id, user=None):
+    f = request.files.get('dataset')
+    if not f:
+        return 'missing file named "dataset"', 400
+    try:
+        _id = ObjectId(_id)
+        if not model_datasets.can_store(_id, user):
+            return 'you don\'t own that model', 403
+        model_datasets.store(_id, f)
+    except InvalidId:
+        return 'invalid model id', 400
+    return '', 204
+
+@app.route('/models/<_id>/dataset', methods=['GET'])
+@require_json_body
+@require_body_jwt
+def download_dataset(_id, user=None):
+    try:
+        _id = ObjectId(_id)
+        if not model_datasets.can_get(_id, user): # todo what if id not exists
+            return 'You lack permissions needed to download that model', 403
+
+        return model_datasets.get(_id)
+    except InvalidId:
+        return 'model not found', 404
+    return '', 204
+
 @app.route('/models/<_id>/attack', methods=['POST'])
 @require_url_jwt
 def attempt_attack(_id, user=None):
@@ -160,3 +225,15 @@ def attempt_attack(_id, user=None):
         return jsonify(result)
     except InvalidId:
         return 'invalid model id', 400
+
+@app.route('/scoreboard', methods=['GET'])
+@require_json_body
+@require_body_jwt
+def scoreboard(user=None):
+    data = request.get_json()
+    search_user = data.get('username')
+    try:
+        scoreboard_data = models.scoreboard(username=search_user)
+    except users.NoSuchUser as e:
+        return str(e), 400
+    return jsonify(scoreboard_data)
