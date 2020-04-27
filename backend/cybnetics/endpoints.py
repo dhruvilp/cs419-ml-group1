@@ -90,12 +90,11 @@ def create_model(user=None):
         return str(e), 400
 
 @app.route('/models', methods=['GET'])
-@require_json_body
 @require_login
 def find_models(user=None):
     """endpoint for searching through models"""
 
-    data = request.get_json()
+    data = request.args
     query = data.get('query')
     target_user = data.get('user')
     attack_mode = data.get('attack_mode')
@@ -118,7 +117,6 @@ def find_models(user=None):
     return jsonify(result)
 
 @app.route('/models/<_id>', methods=['GET'])
-@require_json_body
 @require_login
 def get_model(_id, user=None):
     try:
@@ -164,7 +162,6 @@ def upload_model(_id, user=None):
     return '', 204
 
 @app.route('/models/<_id>/model', methods=['GET'])
-@require_json_body
 @require_login
 def download_model(_id, user=None):
     try:
@@ -194,7 +191,6 @@ def upload_dataset(_id, user=None):
     return '', 204
 
 @app.route('/models/<_id>/dataset', methods=['GET'])
-@require_json_body
 @require_login
 def download_dataset(_id, user=None):
     try:
@@ -229,7 +225,7 @@ def attempt_attack(_id, user=None):
 @app.route('/scoreboard', methods=['GET'])
 @require_login
 def scoreboard(user=None):
-    data = request.get_json()
+    data = request.args
     search_user = data.get('username')
     try:
         scoreboard_data = models.scoreboard(username=search_user)
