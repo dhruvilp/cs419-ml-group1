@@ -8,28 +8,18 @@ from flask.json import JSONEncoder
 
 from .resources import users
 
-def require_body_jwt(f):
+def require_login(f):
     @wraps(f)
     def wrapper(*args, **kwargs):
-        data = request.get_json()
-        if not data.get('token'):
-            return 'Auth token missing from request', 400
-        decoded = users.check_jwt(data['token'])
+        token = request.headers.get('Cybnetics-Token')
+        if not token:
+            return 'missing Cybnetics-Token header in request', 400
+        decoded = users.check_jwt(token)
         if not decoded:
             return 'Invalid or expired auth token', 401
         return f(*args, user=decoded['username'], **kwargs)
     return wrapper
 
-def require_url_jwt(f):
-    @wraps(f)
-    def wrapper(*args, **kwargs):
-        if not request.args.get('token'):
-            return 'Auth token missing from request', 400
-        decoded = users.check_jwt(request.args['token'])
-        if not decoded:
-            return 'Invalid or expired auth token', 401
-        return f(*args, user=decoded['username'], **kwargs)
-    return wrapper
 
 def require_admin(f):
     @wraps(f)
