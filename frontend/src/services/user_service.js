@@ -14,7 +14,11 @@ export const userService = {
     uploadFileToAttack
 };
 
-const authToken = JSON.parse(localStorage.getItem('user'))['token'];
+var authToken = '';
+const getStoredCred = JSON.parse(localStorage.getItem('user'));
+if(getStoredCred !== null){
+    authToken = getStoredCred['token'];
+}
 
 //=================== GET SCORECARD DATA ====================
 async function getLeaderboard() {
