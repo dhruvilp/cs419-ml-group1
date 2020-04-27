@@ -5,6 +5,7 @@ class ViewAdapter:
     """hack to allow use of view in forward function"""
     def __init__(self, *args, **kwargs):
         self.args = args
+        print(self.args)
         self.kwargs = kwargs
     def __call__(self, x):
         return x.view(*self.args, **self.kwargs)
@@ -42,7 +43,7 @@ def make_model_class(layers, pools):
 
         # view special case/hack
         if class_name == 'view':
-            layer['instance'] = ViewAdapter('')
+            layer['instance'] = ViewAdapter(*args, **kwargs)
             layer['pool'] = identity
             layer['activation'] = identity
             continue
