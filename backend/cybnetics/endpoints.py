@@ -8,6 +8,7 @@ from bson.errors import InvalidId
 from .resources import db, users, models, \
     model_images, model_attacks, model_datasets
 from .utils import *
+from .model_builder import BadModelSpec
 
 
 app = Flask(__name__)
@@ -30,12 +31,8 @@ def server_test():
 @require_json_body
 def create_user():
     """
-    Function to create new users.
-    **  Notice how I have to import create in the function since db_connect() is not called
-        right away meaning that we have an app RuntimeError: Working outside of application context.
-        in resources/db.py. It may not be a bad thing that we have to import here.
+    Create the user
     """
-
     try:
         data = request.get_json()
         username = data['username']
@@ -79,14 +76,21 @@ def create_model(user=None):
         data = request.get_json()
         name = data['name']
         description = data['description']
+        layers = data['layers']
+        # pools is optional
         attack_mode = data['attack_mode']
+        color = data['color']
     except Exception as e:
         return 'missing parameter' + str(e), 400
 
     try:
-        model = models.create(name, description, attack_mode, user)
+        model = models.create(owner=user, **data)
         return jsonify(model)
     except models.BadAttackMode as e:
+        return str(e), 400
+    except models.BadModelType as e:
+        return str(e), 400
+    except BadModelSpec as e:
         return str(e), 400
 
 @app.route('/models', methods=['GET'])
@@ -124,6 +128,9 @@ def get_model(_id, user=None):
         model = models.find_one(_id)
         if not model:
             return 'no model found', 404
+        if not (model['attack_mode'] == 'white' or model['owner'] == user):
+            del model['pools']
+            del model['layers']
         return jsonify(model)
     except InvalidId:
         return 'invalid model id', 400
@@ -221,6 +228,8 @@ def attempt_attack(_id, user=None):
         return jsonify(result)
     except InvalidId:
         return 'invalid model id', 400
+    except model_attacks.InvalidAttack as e:
+        return str(e), 400
 
 @app.route('/scoreboard', methods=['GET'])
 @require_login

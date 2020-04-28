@@ -1,11 +1,14 @@
 import os
+import torch
+import cv2
 
 from bson import ObjectId
 from pymongo import ReturnDocument
 
-from cybnetics import utils
-from .db import models_coll
 from . import models
+from .db import models_coll
+from cybnetics import utils
+from cybnetics.model_builder import make_model_class
 
 SCORE_MAP = {
     'white': 1,
@@ -19,21 +22,73 @@ PLACE_MAP = {
     3: 'bronze'
 }
 
-class InavlidImage(Exception):
+class InvalidImage(Exception):
+    def __str__(self):
+        return 'the image was invalid'
+
+class InvalidAttack(ValueError):
     pass
 
+def convert_tensor(filename, color):
+    """
+    Generalize convert_tensor (there are tensor functions that can make this easier
+    can't think of them right now; this works though)
+
+        args:
+            filename: string
+            color: integer 0 or 1
+    """
+    img = cv2.imread(filename, color)
+
+    if not color:
+        init_reshape = img.reshape([1, 1, img.shape[0], img.shape[1]])
+        img_tensor = torch.from_numpy(init_reshape)
+        return img_tensor.float()
+    else:
+        init_reshape = img.transpose((2, 0, 1))
+        img_tensor = torch.from_numpy(init_reshape).reshape([1,3, img.shape[0], img.shape[1]])
+        return img_tensor.float()
+
+
+def prime_neural_network(model_path, layers, pools):
+    klass = make_model_class(layers, pools)
+    device = torch.device('cpu')
+    net = klass().to(device)
+    net.load_state_dict(torch.load(model_path, map_location='cpu'))
+    return net.eval()
+
+def attack_model(net, input_tensor, label):
+    output = net(input_tensor)
+    predicted_label = output.max(1, keepdim=True)[1]
+    if predicted_label.item() == int(label):
+        # the attack was not a success
+        return False
+    else:
+        # attack was a success
+        return True
+
 def simulate_attack(model_id, label, attack_image, user):
-    filename = utils.get_path('a_' + str(model_id) + '_' + str(ObjectId()))
-    # store attack image
-    attack_image.save(filename)
-    # run the model with the image to see if its defeated
-    success = True
-
-    # if we cant load the image or the format is bad
-    # throw InvalidImage()
-
-    # delete the image
-    os.remove(filename)
+    """ One Million things can go wrong in this method """
+    # if we get an exception then success = False
+    success = False
+    # make paths
+    image_path = utils.get_path('a_' + str(model_id) + '_' + str(ObjectId()))
+    model_path = utils.model_filename(model_id)
+    # temp save the image
+    attack_image.save(image_path)
+    try:
+        # get model from db
+        db_models = models_coll()
+        model = db_models.find_one({'_id': model_id})
+        # make the net to classify the input
+        net = prime_neural_network(model_path, model['layers'], model['pools'])
+        # convert input into tensor
+        input_tensor = convert_tensor(image_path, model['color'])
+        # FINALY do the damn attack
+        success = attack_model(net, input_tensor, label)
+    except Exception as e:
+        raise InvalidAttack(str(e))
+    os.remove(image_path)
     return success
 
 def set_place(attack_id, place_name):
