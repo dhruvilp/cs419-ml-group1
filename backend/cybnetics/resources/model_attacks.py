@@ -30,6 +30,28 @@ class InvalidAttack(Exception):
     def __str__(self):
         return 'one of the one million things went wrong during the attack'
 
+def convert_tensor_general(filename, color):
+    """
+    Generalize convert_tensor (there are tensor functions that can make this easier
+    can't think of them right now; this works though)
+
+        args:
+            filename: string
+            color: integer 0 or 1
+    """
+    img = cv2.imread(filename, color)
+
+    if color == 0:
+        init_reshape = img.reshape([1, 1, img.shape[0], img.shape[1])
+        img_tensor = torch.from_numpy(init_reshape)
+        return img_tensor.float()
+    elif color == 1:
+        init_reshape = img.transpose((2, 0, 1))
+        img_tensor = torch.from_numpy(init_reshape).reshape([1,3, img.shape[0], img.shape[1]])
+        return img_tensor.float()
+
+
+# not going to remove this for this commit
 def convert_tensor(filename, model_type):
     """ Converts the image file to a tensor """
     try:
@@ -79,7 +101,11 @@ def simulate_attack(model_id, label, attack_image, user):
         is_model = db_models.find_one({'_id': model_id})
         model_type = is_model['model_type']
         input_tensor = convert_tensor(image_path, model_type)
+<<<<<<< HEAD
         model_path = utils.get_path('m_' + str(model_id))
+=======
+        model_path = utils.model_path(model_id)
+>>>>>>> 16aef7f489df38dc814b442146aa89e86a070cda
         success = attack_model(model_path, model_type, input_tensor, label)
         return success
     except:
