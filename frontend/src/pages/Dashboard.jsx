@@ -11,7 +11,8 @@ class Dashboard extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      ml_models: []
+      ml_models: [],
+      username: ''
     }
   }
 
@@ -20,10 +21,17 @@ class Dashboard extends React.Component {
     document.scrollingElement.scrollTop = 0;
     this.refs.main.scrollTop = 0;
 
-    // var jwt = require('jsonwebtoken');
-    // var username = jwt.decode(JSON.parse(localStorage.getItem('user'))['token'])['username'];
+    var jwt = require('jsonwebtoken');
+    var username = jwt.decode(JSON.parse(localStorage.getItem('user'))['token'])['username'];
+    this.setState({
+      username: username
+    });
 
-    userService.getListOfModels()
+    this.getListOfModels(username);
+  }
+
+  getListOfModels(username){
+    userService.getListOfModels(username)
     .then((data) => {
       if(data){
         this.setState({
@@ -41,6 +49,21 @@ class Dashboard extends React.Component {
       [state]: !this.state[state]
     });
   };
+
+  deleteModel(modelId){
+    userService.deleteModel(modelId)
+    .then(
+      (resp) => {
+        console.log('Success: '+resp);
+        if(resp === 'deleted'){
+          this.getListOfModels(this.state.username);
+        }
+      }
+    )
+    .catch((error) => {
+      console.log(error);
+    });
+  }
 
   render() {
     const { ml_models } = this.state;
@@ -88,6 +111,7 @@ class Dashboard extends React.Component {
                                         {model.attack_mode === 'black' ? <span style={{"paddingLeft": 10}}><Badge color="dark">Black Box</Badge></span> : <span></span>}
                                         {model.attack_mode === 'white' ? <span style={{"paddingLeft": 10}}><Badge style={{backgroundColor: "#f2f2f2"}}>White Box</Badge></span> : <span></span>}
                                         {model.attack_mode === 'gray' ? <span style={{"paddingLeft": 10}}><Badge style={{backgroundColor: "#787878", color: "#FFFFFF"}}>Gray Box</Badge></span> : <span></span>}
+                                        {model.ready ? <span style={{"paddingLeft": 10}}><Badge color="success">READY</Badge></span> : <span style={{"paddingLeft": 10}}><Badge color="warning">NOT READY</Badge></span>}
                                       </Col>
                                       <Col md="4">
                                         <Nav className="justify-content-end">

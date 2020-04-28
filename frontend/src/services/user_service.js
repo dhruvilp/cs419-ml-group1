@@ -9,7 +9,7 @@ export const userService = {
     downloadMlModel,
     downloadDataset,
     deleteModel,
-    adminPublishNewModel,
+    publishNewModel,
     uploadTrainedModel,
     uploadDataset,
     uploadFileToAttack
@@ -26,6 +26,10 @@ const kHeaders = new Headers({
     'Cybnetics-Token': authToken 
   });
 
+const mHeader = new Headers({
+    'Cybnetics-Token': authToken 
+  });
+
 //=================== GET SCORECARD DATA ====================
 async function getLeaderboard() {
     const requestOptions = {
@@ -38,14 +42,25 @@ async function getLeaderboard() {
 }
 
 //================= GET LIST OF MODELS ==================
-async function getListOfModels() {
-    const requestOptions = {
-        method: 'GET',
-        headers: kHeaders
-    };
-    const response = await fetch(`${BASE_URL}/models`, requestOptions);
-    const listOfModels = await handleResponse(response);
-    return listOfModels;
+async function getListOfModels(username) {
+    if(username) {
+        const requestOptions = {
+            method: 'GET',
+            headers: kHeaders
+        };
+        const response = await fetch(`${BASE_URL}/models?user=${username}`, requestOptions);
+        const listOfModels = await handleResponse(response);
+        return listOfModels; 
+    }
+    else {
+        const requestOptions = {
+            method: 'GET',
+            headers: kHeaders
+        };
+        const response = await fetch(`${BASE_URL}/models`, requestOptions);
+        const listOfModels = await handleResponse(response);
+        return listOfModels;
+    }
 }
 
 //================= GET MODEL DESCRIPTION ==================
@@ -89,11 +104,16 @@ async function deleteModel(id) {
     };
     const response = await fetch(`${BASE_URL}/models/${id}`, requestOptions);
     const deletedModel = await handleResponse(response);
-    return deletedModel;
+    if (response.status === 204){
+        return 'deleted';
+    }
+    else {
+        return deletedModel;
+    }
 }
 
 //=============== ADMIN PUBLISH NEW MODEL ==================
-async function adminPublishNewModel(name, description, type, mode) {
+async function publishNewModel(name, description, type, mode, poolsSpec, layersSpec, selectInputColor) {
     const requestOptions = {
         method: 'POST',
         headers: kHeaders,
@@ -101,7 +121,8 @@ async function adminPublishNewModel(name, description, type, mode) {
             "name": name,
             "description": description,
             "model_type": type,
-            "attack_mode": mode
+            "attack_mode": mode,
+            "color": true
         })
     };
     const response = await fetch(`${BASE_URL}/models`, requestOptions);
@@ -113,31 +134,41 @@ async function adminPublishNewModel(name, description, type, mode) {
 async function uploadTrainedModel(id, formData) {
     const requestOptions = {
         method: 'POST',
-        headers: kHeaders,
+        headers: mHeader,
         body: formData
     };
     const response = await fetch(`${BASE_URL}/models/${id}/model`, requestOptions);
     const uploadedTrainedModel = await handleResponse(response);
-    return uploadedTrainedModel;
+    if (response.status === 204){
+        return 'uploaded';
+    }
+    else {
+        return uploadedTrainedModel;
+    }
 }
 
 //=============== UPLOAD DATSET ==================
 async function uploadDataset(id, formData) {
     const requestOptions = {
         method: 'POST',
-        headers: kHeaders,
+        headers: mHeader,
         body: formData
     };
     const response = await fetch(`${BASE_URL}/models/${id}/dataset`, requestOptions);
     const uploadedDataset = await handleResponse(response);
-    return uploadedDataset;
+    if (response.status === 204){
+        return 'uploaded';
+    }
+    else {
+        return uploadedDataset;
+    }
 }
 
 //=============== UPLOAD DATSET ==================
 async function uploadFileToAttack(id, formData, label) {
     const requestOptions = {
         method: 'POST',
-        headers: kHeaders,
+        headers: mHeader,
         body: formData
     };
     const response = await fetch(`${BASE_URL}/models/${id}/attack?label=${label}`, requestOptions);
