@@ -101,11 +101,7 @@ def simulate_attack(model_id, label, attack_image, user):
         is_model = db_models.find_one({'_id': model_id})
         model_type = is_model['model_type']
         input_tensor = convert_tensor(image_path, model_type)
-<<<<<<< HEAD
-        model_path = utils.get_path('m_' + str(model_id))
-=======
         model_path = utils.model_path(model_id)
->>>>>>> 16aef7f489df38dc814b442146aa89e86a070cda
         success = attack_model(model_path, model_type, input_tensor, label)
         return success
     except:
