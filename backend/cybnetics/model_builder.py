@@ -165,7 +165,7 @@ def make_cfair10_example():
 def make_mnist_example():
     return make_model_class([
         {'type': 'Conv2d', 'args': [1, 32, 3], 'activation': 'relu', 'name': 'conv1'},
-        {'type': 'Conv2d', 'args': [32, 64, 3], 'activation': 'relu', 'pool': 0, 'drouput': 0, 'name': 'conv2'},
+        {'type': 'Conv2d', 'args': [32, 64, 3], 'activation': 'relu', 'pool': 0, 'dropout': 0, 'name': 'conv2'},
         {'type': 'flatten', 'args': [1]},
         {'type': 'Linear', 'args': [9216, 128], 'activation': 'relu', 'dropout': 1, 'name': 'fc1'},
         {'type': 'Linear', 'args': [128, 10], 'activation': 'log_softmax', 'name': 'fc2'},
