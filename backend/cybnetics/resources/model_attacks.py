@@ -5,10 +5,11 @@ import cv2
 from bson import ObjectId
 from pymongo import ReturnDocument
 
-from cybnetics import utils
+from . import models
 from .cnn_classes import CIFARNet, MNISTNet
 from .db import models_coll
-from . import models
+from cybnetics import utils
+from cybnetics.model_builder import make_model_class
 
 SCORE_MAP = {
     'white': 1,
@@ -26,11 +27,10 @@ class InvalidImage(Exception):
     def __str__(self):
         return 'the image was invalid'
 
-class InvalidAttack(Exception):
-    def __str__(self):
-        return 'one of the one million things went wrong during the attack'
+class InvalidAttack(ValueError):
+    pass
 
-def convert_tensor_general(filename, color):
+def convert_tensor(filename, color):
     """
     Generalize convert_tensor (there are tensor functions that can make this easier
     can't think of them right now; this works though)
@@ -41,46 +41,24 @@ def convert_tensor_general(filename, color):
     """
     img = cv2.imread(filename, color)
 
-    if color == 0:
-        init_reshape = img.reshape([1, 1, img.shape[0], img.shape[1])
+    if not color:
+        init_reshape = img.reshape([1, 1, img.shape[0], img.shape[1]])
         img_tensor = torch.from_numpy(init_reshape)
         return img_tensor.float()
-    elif color == 1:
+    else:
         init_reshape = img.transpose((2, 0, 1))
         img_tensor = torch.from_numpy(init_reshape).reshape([1,3, img.shape[0], img.shape[1]])
         return img_tensor.float()
 
 
-# not going to remove this for this commit
-def convert_tensor(filename, model_type):
-    """ Converts the image file to a tensor """
-    try:
-        if model_type == 'mnist':
-            # Load the attack image in greyscale with the shape (C * H * W)
-            img = cv2.imread(filename, 0).reshape([1,28,28])
-            img_tensor = torch.from_numpy(img).reshape([1,1,28,28])
-            return img_tensor.float()
-        elif model_type == 'cifar':
-            # Load the attack image in rgb with the shape (C * H * W)
-            img = cv2.imread(filename, 1).transpose((2, 0, 1))
-            img_tensor = torch.from_numpy(img).reshape([1,3,32,32])
-            return img_tensor.float()
-    except:
-        raise InvalidImage()
-
-def prime_neural_netowrk(model_path, model_type):
+def prime_neural_network(model_path, layers, pools):
+    klass = make_model_class(layers, pools)
     device = torch.device('cpu')
-    if model_type == 'mnist':
-        net = MNISTNet().to(device)
-        net.load_state_dict(torch.load(model_path, map_location='cpu'))
-        return net.eval()
-    elif model_type == 'cifar':
-        net = CIFARNet().to(device)
-        net.load_state_dict(torch.load(model_path, map_location='cpu'))
-        return net.eval()
+    net = klass().to(device)
+    net.load_state_dict(torch.load(model_path, map_location='cpu'))
+    return net.eval()
 
-def attack_model(model_path, model_type, input_tensor, label):
-    net = prime_neural_netowrk(model_path, model_type)
+def attack_model(net, input_tensor, label):
     output = net(input_tensor)
     predicted_label = output.max(1, keepdim=True)[1]
     if predicted_label.item() == int(label):
@@ -94,20 +72,25 @@ def simulate_attack(model_id, label, attack_image, user):
     """ One Million things can go wrong in this method """
     # if we get an exception then success = False
     success = False
+    # make paths
+    image_path = utils.get_path('a_' + str(model_id) + '_' + str(ObjectId()))
+    model_path = utils.model_filename(model_id)
+    # temp save the image
+    attack_image.save(image_path)
     try:
-        image_path = utils.get_path('a_' + str(model_id) + '_' + str(ObjectId()))
-        attack_image.save(image_path)
+        # get model from db
         db_models = models_coll()
-        is_model = db_models.find_one({'_id': model_id})
-        model_type = is_model['model_type']
-        input_tensor = convert_tensor(image_path, model_type)
-        model_path = utils.model_path(model_id)
-        success = attack_model(model_path, model_type, input_tensor, label)
-        return success
-    except:
-        raise InvalidAttack()
-    finally:
-        os.remove(image_path)
+        model = db_models.find_one({'_id': model_id})
+        # make the net to classify the input
+        net = prime_neural_network(model_path, model['layers'], model['pools'])
+        # convert input into tensor
+        input_tensor = convert_tensor(image_path, model['color'])
+        # FINALY do the damn attack
+        success = attack_model(net, input_tensor, label)
+    except Exception as e:
+        raise InvalidAttack(str(e))
+    os.remove(image_path)
+    return success
 
 def set_place(attack_id, place_name):
     models_c = models_coll()

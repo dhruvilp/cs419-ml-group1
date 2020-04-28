@@ -26,8 +26,8 @@ class BadModelType(Exception):
             + str(MODEL_TYPES)
     
 def create(name=None, description=None, attack_mode=None, owner=None,
-           layers=None, pools=[], **kwargs):
-    for param in [name, description, attack_mode, owner, layers]:
+           layers=None, color=None, pools=[], **kwargs):
+    for param in [name, description, attack_mode, owner, layers, color]:
         if param is None:
             raise ValueError('missing required param to create')
     
@@ -42,6 +42,7 @@ def create(name=None, description=None, attack_mode=None, owner=None,
         'description': description,
         'layers': layers,
         'pools': pools,
+        'color': bool(color),
         'attack_mode': attack_mode,
         'owner': owner,
         'ready': False

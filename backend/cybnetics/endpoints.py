@@ -79,6 +79,7 @@ def create_model(user=None):
         layers = data['layers']
         # pools is optional
         attack_mode = data['attack_mode']
+        color = data['color']
     except Exception as e:
         return 'missing parameter' + str(e), 400
 
