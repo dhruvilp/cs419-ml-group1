@@ -108,12 +108,12 @@ def find_models(user=None):
                              user=target_user,
                              ready=ready)
     except users.NoSuchUser as e:
-        return str(e), 404
+        return [], 404
     except models.BadAttackMode as e:
         return str(e), 400
 
     if len(result) == 0:
-        return 'No models matched that query', 404
+        return [], 404
     return jsonify(result)
 
 @app.route('/models/<_id>', methods=['GET'])
