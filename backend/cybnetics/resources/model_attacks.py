@@ -6,7 +6,6 @@ from bson import ObjectId
 from pymongo import ReturnDocument
 
 from . import models
-from .cnn_classes import CIFARNet, MNISTNet
 from .db import models_coll
 from cybnetics import utils
 from cybnetics.model_builder import make_model_class
