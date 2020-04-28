@@ -1,8 +1,36 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { Button, Card, CardImg, Container, Modal, Row, Col, Form, FormGroup, CardHeader, CustomInput, CardBody, InputGroup, Input } from "reactstrap";
+import { Button, Card, CardImg, Container, Modal, Row, Col, Form, FormGroup, CardHeader, CustomInput, CardBody, InputGroup, Input, Label, Spinner, UncontrolledAlert } from "reactstrap";
+
+import { userService } from "../services/user_service";
 
 class UploadButtons extends React.Component {
+
+  constructor(props){
+    super(props);
+    this.state = {
+      ml_models: [],
+      loading: false,
+      error: false,
+      errorMsg: ''
+    }
+  }
+
+  componentDidMount() {
+  
+    userService.getListOfModels()
+    .then((data) => {
+      if(data){
+        this.setState({
+          ml_models : data
+        });
+      }
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+
+  }
 
   state = {};
   toggleModal = state => {
@@ -11,7 +39,45 @@ class UploadButtons extends React.Component {
     });
   };
 
+  handleDatasetUpload(e) {
+    e.preventDefault();
+
+    const formData = new FormData();
+    const fileField = document.querySelector('#datasetFile');
+    formData.append('dataset', fileField.files[0]);
+
+    var kOption = document.getElementById("selectModel");
+    var selectedModel = kOption.options[e.selectedIndex].text;
+    console.log(selectedModel);
+
+    if (!(selectedModel && fileField.files[0])) {
+      return;
+    }
+
+    this.setState({ loading: true });
+    userService.uploadDataset(selectedModel, formData)
+      .then(
+        (success) => {
+          console.log(success);
+          if(success){
+            this.setState({ loading: false });
+            this.toggleModal("datasetModal");
+          }
+        }
+      )
+      .catch((error) => {
+        console.log(error);
+        this.setState({ 
+          error: true, 
+          loading: false,
+          errorMsg: error
+        });
+        return;
+      });
+  }
+
   render() {
+    const { ml_models, error, errorMsg, loading } = this.state;
     return (
       <>
       <Container className="container-md">
@@ -48,24 +114,45 @@ class UploadButtons extends React.Component {
           <div className="modal-body p-0">
             <Card className="bg-secondary shadow border-0">
               <CardHeader className="bg-white pb-3">
-                <div className="text-muted text-center mb-3">
+                <div className="text-muted text-center">
                   <h5>Upload Dataset</h5>
-                </div>
-                <div className="text-left">
-                  <Form>
-                    <FormGroup>
-                      <CustomInput type="file" id="datasetFileBrowser" name="customFile" />
-                    </FormGroup>
-                  </Form>
                 </div>
               </CardHeader>
               <CardBody className="px-lg-5 py-lg-5">
+                <div className="text-left">
+                  <Form>
+                    <FormGroup>
+                      <Label for="selectModel">Select Model</Label>
+                      <Input type="select" name="selectModel" id="selectModel">
+                        <option value="">Select Model</option>
+                        {ml_models.map((model) => 
+                          <option>
+                            {model.name} ({model._id})
+                          </option>
+                        )}
+                      </Input>
+                    </FormGroup>
+                    <FormGroup>
+                      <CustomInput type="file" id="datasetFile" name="datasetFile" />
+                    </FormGroup>
+                  </Form>
+                </div>
+                { error ?
+                  <div>
+                    <UncontrolledAlert color="danger">
+                      {errorMsg}
+                    </UncontrolledAlert>
+                  </div>
+                  : <span></span>
+                }
                 <div className="text-center">
                   <Button block className="my-4" color="primary" size="lg"
-                    onClick={() => this.toggleModal("datasetModal")}
+                    disabled={loading}
+                    onClick={this.handleDatasetUpload}
                   >
                     Upload
                   </Button>
+                  {loading && <Spinner color="primary" /> }
                 </div>
               </CardBody>
             </Card>
@@ -87,7 +174,7 @@ class UploadButtons extends React.Component {
                 <div className="text-left">
                   <Form>
                     <FormGroup>
-                      <CustomInput type="file" id="mlModelBrowser" name="customFile" />
+                      <CustomInput type="file" id="mlModelBrowser" name="modelFile" />
                     </FormGroup>
                   </Form>
                 </div>
