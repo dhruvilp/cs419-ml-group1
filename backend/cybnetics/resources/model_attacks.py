@@ -60,6 +60,11 @@ def prime_neural_network(model_path, layers, pools):
     net.load_state_dict(torch.load(model_path, map_location='cpu'))
     return net.eval()
 
+def get_predicted_label(net, input_tensor):
+    output = net(input_tensor)
+    predicted_label = output.max(1, keepdim=True)[1]
+    return predicted_label.item()
+
 def attack_model(net, input_tensor, label):
     output = net(input_tensor)
     predicted_label = output.max(1, keepdim=True)[1]
@@ -87,12 +92,14 @@ def simulate_attack(model_id, label, attack_image, user):
         net = prime_neural_network(model_path, model['layers'], model['pools'])
         # convert input into tensor
         input_tensor = convert_tensor(image_path, model['color'])
+        # get the predicted_label ()
+        predicted_label_int = get_predicted_label(net, input_tensor)
         # FINALY do the damn attack
         success = attack_model(net, input_tensor, label)
     except Exception as e:
         raise InvalidAttack(str(e))
     os.remove(image_path)
-    return success
+    return success, str(predicted_label_int)
 
 def set_place(attack_id, place_name):
     models_c = models_coll()
@@ -102,7 +109,7 @@ def set_place(attack_id, place_name):
         '$set': {'attacks.$.place': place_name} # assign the attack its place
     })
 
-def save_attack(model_id, label, user, success):
+def save_attack(model_id, label, predicted_label, user, success):
     models_c = models_coll()
     attack_id = ObjectId()
     points = 0
@@ -117,6 +124,7 @@ def save_attack(model_id, label, user, success):
             'attacks': {
                 '_id': attack_id,
                 'label': label,
+                'predicted_label': predicted_label,
                 'user': user,
                 'success': success,
                 'points': points

@@ -223,8 +223,8 @@ def attempt_attack(_id, user=None):
             return 'missing url parameter "label"', 400
         if not models.find_one(_id):
             return 'model not found', 404
-        success = model_attacks.simulate_attack(_id, label, f, user)
-        result = model_attacks.save_attack(_id, label, user, success)
+        success, predicted_label = model_attacks.simulate_attack(_id, label, f, user)
+        result = model_attacks.save_attack(_id, label, predicted_label, user, success)
         return jsonify(result)
     except InvalidId:
         return 'invalid model id', 400
