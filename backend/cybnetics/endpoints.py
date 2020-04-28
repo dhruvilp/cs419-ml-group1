@@ -89,6 +89,8 @@ def create_model(user=None):
         return str(e), 400
     except models.BadModelType as e:
         return str(e), 400
+    except BadModelSpec as e:
+        return str(e), 400
 
 @app.route('/models', methods=['GET'])
 @require_json_body

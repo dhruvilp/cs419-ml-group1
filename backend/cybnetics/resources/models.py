@@ -1,3 +1,5 @@
+import copy
+
 from bson import ObjectId
 from bson.errors import InvalidId
 
@@ -32,7 +34,7 @@ def create(name=None, description=None, attack_mode=None, owner=None,
     if not attack_mode in ATTACK_MODES:
         raise BadAttackMode(attack_mode)
     # validate by making class and see if it throws an error
-    make_model_class(layers, pools)
+    make_model_class(copy.deepcopy(layers), copy.deepcopy(pools))
     models = models_coll()
     model = {
         '_id': ObjectId(),
