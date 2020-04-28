@@ -36,9 +36,12 @@ def convert_tensor(filename, color):
 
         args:
             filename: string
-            color: integer 0 or 1
+            color: bool
     """
-    img = cv2.imread(filename, color)
+    flag = cv2.IMREAD_COLOR
+    if not color:
+        flag = cv2.IMREAD_GRAYSCALE
+    img = cv2.imread(filename, flag)
 
     if not color:
         init_reshape = img.reshape([1, 1, img.shape[0], img.shape[1]])
