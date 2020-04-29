@@ -78,6 +78,7 @@ def create_model(user=None):
         description = data['description']
         layers = data['layers']
         # pools is optional
+        # dropouts is optional
         attack_mode = data['attack_mode']
         color = data['color']
     except Exception as e:

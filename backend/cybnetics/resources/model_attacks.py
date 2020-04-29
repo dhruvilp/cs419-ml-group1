@@ -53,8 +53,8 @@ def convert_tensor(filename, color):
         return img_tensor.float()
 
 
-def prime_neural_network(model_path, layers, pools):
-    klass = make_model_class(layers, pools)
+def prime_neural_network(model_path, layers, pools, dropout):
+    klass = make_model_class(layers, pools, dropout)
     device = torch.device('cpu')
     net = klass().to(device)
     net.load_state_dict(torch.load(model_path, map_location='cpu'))
@@ -89,7 +89,7 @@ def simulate_attack(model_id, label, attack_image, user):
         db_models = models_coll()
         model = db_models.find_one({'_id': model_id})
         # make the net to classify the input
-        net = prime_neural_network(model_path, model['layers'], model['pools'])
+        net = prime_neural_network(model_path, model['layers'], model['pools'], model['dropouts'])
         # convert input into tensor
         input_tensor = convert_tensor(image_path, model['color'])
         # get the predicted_label ()
