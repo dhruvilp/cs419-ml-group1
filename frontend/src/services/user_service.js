@@ -121,8 +121,7 @@ async function publishNewModel(name, description, type, mode, poolsSpec, layersS
             "name": name,
             "description": description,
             "model_type": type,
-            "attack_mode": mode,
-            "color": true
+            "attack_mode": mode
         })
     };
     const response = await fetch(`${BASE_URL}/models`, requestOptions);

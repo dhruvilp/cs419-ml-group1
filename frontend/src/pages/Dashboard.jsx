@@ -11,8 +11,7 @@ class Dashboard extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      ml_models: [],
-      username: ''
+      ml_models: []
     }
   }
 
@@ -23,14 +22,7 @@ class Dashboard extends React.Component {
 
     var jwt = require('jsonwebtoken');
     var username = jwt.decode(JSON.parse(localStorage.getItem('user'))['token'])['username'];
-    this.setState({
-      username: username
-    });
 
-    this.getListOfModels(username);
-  }
-
-  getListOfModels(username){
     userService.getListOfModels(username)
     .then((data) => {
       if(data){
@@ -49,21 +41,6 @@ class Dashboard extends React.Component {
       [state]: !this.state[state]
     });
   };
-
-  deleteModel(modelId){
-    userService.deleteModel(modelId)
-    .then(
-      (resp) => {
-        console.log('Success: '+resp);
-        if(resp === 'deleted'){
-          this.getListOfModels(this.state.username);
-        }
-      }
-    )
-    .catch((error) => {
-      console.log(error);
-    });
-  }
 
   render() {
     const { ml_models } = this.state;
@@ -116,7 +93,7 @@ class Dashboard extends React.Component {
                                       <Col md="4">
                                         <Nav className="justify-content-end">
                                           <NavItem>
-                                            <NavLink href="#" target="_blank" rel="noopener noreferrer">
+                                            <NavLink href="#" target="_blank" rel="noopener noreferrer" id={model._id} onClick={() => console.log(model._id)}>
                                               <svg className="bi bi-trash-fill" width="2em" height="2em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
                                                 <path fillRule="evenodd" d="M2.5 1a1 1 0 00-1 1v1a1 1 0 001 1H3v9a2 2 0 002 2h6a2 2 0 002-2V4h.5a1 1 0 001-1V2a1 1 0 00-1-1H10a1 1 0 00-1-1H7a1 1 0 00-1 1H2.5zm3 4a.5.5 0 01.5.5v7a.5.5 0 01-1 0v-7a.5.5 0 01.5-.5zM8 5a.5.5 0 01.5.5v7a.5.5 0 01-1 0v-7A.5.5 0 018 5zm3 .5a.5.5 0 00-1 0v7a.5.5 0 001 0v-7z" clipRule="evenodd"/>
                                               </svg>
