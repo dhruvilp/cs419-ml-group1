@@ -24,17 +24,17 @@ class BadModelType(Exception):
     def __str__(self):
         return 'invalid model type ' + self.model_type + ' must be in ' \
             + str(MODEL_TYPES)
-    
+
 def create(name=None, description=None, attack_mode=None, owner=None,
-           layers=None, color=None, pools=[], **kwargs):
+           layers=None, color=None, pools=[], dropouts=[], **kwargs):
     for param in [name, description, attack_mode, owner, layers, color]:
         if param is None:
             raise ValueError('missing required param to create')
-    
+
     if not attack_mode in ATTACK_MODES:
         raise BadAttackMode(attack_mode)
     # validate by making class and see if it throws an error
-    make_model_class(copy.deepcopy(layers), copy.deepcopy(pools))
+    make_model_class(copy.deepcopy(layers), copy.deepcopy(pools), copy.deepcopy(dropouts))
     models = models_coll()
     model = {
         '_id': ObjectId(),
@@ -42,6 +42,7 @@ def create(name=None, description=None, attack_mode=None, owner=None,
         'description': description,
         'layers': layers,
         'pools': pools,
+        'dropouts': dropouts,
         'color': bool(color),
         'attack_mode': attack_mode,
         'owner': owner,
