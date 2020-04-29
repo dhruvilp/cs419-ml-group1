@@ -1,5 +1,5 @@
 import React from "react";
-import { Col, Card, Container, Button, CardBody, FormGroup, Label, Input, Row, Progress} from "reactstrap";
+import { Col, Card, Container, Button, FormGroup, Label, Input, Row, Progress} from "reactstrap";
 
 import CybneticsNavbar from "components/CybneticsNavbar";
 import CybneticsFooter from "components/CybneticsFooter";
@@ -125,9 +125,9 @@ class Openground extends React.Component {
                           <Progress max="100" value="10" color="success" />
                         </div>
                         <Row className="ml-6 mb-3 mt-3">
-                          <img className="mb-3" src={require('assets/img/skull.PNG')}/>
+                          <img alt="..." className="mb-3" src={require('assets/img/skull.PNG')}/>
                           <p className="ml-2 mt-1">Attacked Successfully!</p>
-                          <img className="mb-3 ml-3" src={require('assets/img/coin.png')}/>
+                          <img alt="..." className="mb-3 ml-3" src={require('assets/img/coin.png')}/>
                           <p className="ml-1 mt-1 text-primary">100pt</p>
                         </Row>
                       </Card>
