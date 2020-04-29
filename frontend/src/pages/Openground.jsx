@@ -1,5 +1,5 @@
 import React from "react";
-import { Col, Card, Container, Button, FormGroup, Label, Input, Row, Progress} from "reactstrap";
+import { Col, Card, Container, Button, FormGroup, Label, Input, Row} from "reactstrap";
 
 import CybneticsNavbar from "components/CybneticsNavbar";
 import CybneticsFooter from "components/CybneticsFooter";
@@ -15,6 +15,7 @@ class Openground extends React.Component {
       ml_models: [],
       'selectModel': ''
     }
+    this.handleChange = this.handleChange.bind(this);
     this.dropHandler = this.dropHandler.bind(this);
     this.dragOverHandler = this.dragOverHandler.bind(this);
   }
@@ -156,48 +157,27 @@ class Openground extends React.Component {
                   <img width="100%" src={this.state.file} alt={this.state.fileName} />
                 </Card>
               </Col>
-              <Col sm="6">
+              <Col sm="6" className="align-items-center justify-content-md-between">
                 <Card className="shadow">
-                  <h4 className="ml-8">Predicted Results</h4>
-                  <div className="progress-wrapper ml-3 mr-3">
-                    <div className="progress-info">
-                      <div className="progress-label">
-                        <span>Predicted Label1</span>
-                      </div>
-                      <div className="progress-percentage">
-                        <span>90%</span>
-                      </div>
-                    </div>
-                    <Progress max="100" value="90" color="success" />
-                  </div>
-                  <div className="progress-wrapper ml-3 mr-3">
-                    <div className="progress-info">
-                      <div className="progress-label">
-                        <span>Predicted Label2</span>
-                      </div>
-                      <div className="progress-percentage">
-                        <span>12%</span>
-                      </div>
-                    </div>
-                    <Progress max="100" value="12" color="success" />
-                  </div>
-                  <div className="progress-wrapper ml-3 mr-3">
-                    <div className="progress-info">
-                      <div className="progress-label">
-                        <span>Predicted Label3</span>
-                      </div>
-                      <div className="progress-percentage">
-                        <span>10%</span>
-                      </div>
-                    </div>
-                    <Progress max="100" value="10" color="success" />
-                  </div>
-                  <Row className="ml-6 mb-3 mt-3">
-                    <img alt="..." className="mb-3" src={require('assets/img/skull.PNG')}/>
-                    <p className="ml-2 mt-1">Attacked Successfully!</p>
-                    <img alt="..." className="mb-3 ml-3" src={require('assets/img/coin.png')}/>
-                    <p className="ml-1 mt-1 text-primary">100pt</p>
-                  </Row>
+                  <h4 className="text-center py-3">Results</h4>
+                  <Col>
+                    <Row className="align-items-center justify-content-md-between">
+                      <Col sm="2">
+                      <img alt="..." className="mb-3 text-center" src={require('assets/img/skull.PNG')}/>
+                      </Col>
+                      <Col>
+                      <p className="text-left">Attacked Successfully!</p>
+                      </Col>
+                    </Row>
+                    <Row className="align-items-center justify-content-md-between">
+                      <Col sm="2">
+                      <img alt="..." className="mb-3 text-center" src={require('assets/img/coin.png')}/>
+                      </Col>
+                      <Col>
+                      <p className="text-primary text-left">1 pt</p>
+                      </Col>
+                    </Row>
+                  </Col>
                 </Card>
               </Col>
             </Row>  
