@@ -8,7 +8,7 @@ A platform for adversarial attack and defenses in which administrator can publis
 
 ## Group Members
 | Name | NetID |
-| ----------- | ----------- |
+| ------------ | ------------ |
 | Dhruvil Patel (Project Lead) | dhp68 |
 | Michael Winters | mjw271 |
 | Antonino DiMaggio | ajd311 |
