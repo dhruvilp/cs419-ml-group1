@@ -72,7 +72,7 @@
   "devDependencies": {
     "@types/react": "16.9.19",
     "eslint-plugin-flowtype": "3.13.0",
-    "jquery": "3.4.1",
+    "jquery": "3.5.0",
     "typescript": "3.7.5"
   }
 }
