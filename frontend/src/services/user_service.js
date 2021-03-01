@@ -8,7 +8,8 @@ export const userService = {
     getModelDescription,
     downloadMlModel,
     downloadDataset,
-    adminPublishNewModel,
+    deleteModel,
+    publishNewModel,
     uploadTrainedModel,
     uploadDataset,
     uploadFileToAttack
@@ -20,14 +21,20 @@ if(getStoredCred !== null){
     authToken = getStoredCred['token'];
 }
 
+const kHeaders = new Headers({
+    'Content-Type': 'application/json',
+    'Cybnetics-Token': authToken 
+  });
+
+const mHeader = new Headers({
+    'Cybnetics-Token': authToken 
+  });
+
 //=================== GET SCORECARD DATA ====================
 async function getLeaderboard() {
     const requestOptions = {
         method: 'GET',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ 
-            "token" : authToken
-        })
+        headers: kHeaders
     };
     const response = await fetch(`${BASE_URL}/scoreboard`, requestOptions);
     const scoreboardData = await handleResponse(response);
@@ -36,27 +43,31 @@ async function getLeaderboard() {
 
 //================= GET LIST OF MODELS ==================
 async function getListOfModels(username) {
-    const requestOptions = {
-        method: 'GET',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ 
-            "token" : authToken,
-            "user": username
-        })
-    };
-    const response = await fetch(`${BASE_URL}/models`, requestOptions);
-    const listOfModels = await handleResponse(response);
-    return listOfModels;
+    if(username) {
+        const requestOptions = {
+            method: 'GET',
+            headers: kHeaders
+        };
+        const response = await fetch(`${BASE_URL}/models?user=${username}`, requestOptions);
+        const listOfModels = await handleResponse(response);
+        return listOfModels; 
+    }
+    else {
+        const requestOptions = {
+            method: 'GET',
+            headers: kHeaders
+        };
+        const response = await fetch(`${BASE_URL}/models`, requestOptions);
+        const listOfModels = await handleResponse(response);
+        return listOfModels;
+    }
 }
 
 //================= GET MODEL DESCRIPTION ==================
 async function getModelDescription(id) {
     const requestOptions = {
         method: 'GET',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ 
-            "token" : authToken
-        })
+        headers: kHeaders
     };
     const response = await fetch(`${BASE_URL}/models/${id}`, requestOptions);
     const modelDescription = await handleResponse(response);
@@ -67,10 +78,7 @@ async function getModelDescription(id) {
 async function downloadMlModel(id) {
     const requestOptions = {
         method: 'GET',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ 
-            "token" : authToken
-        })
+        headers: kHeaders
     };
     const response = await fetch(`${BASE_URL}/models/${id}/model`, requestOptions);
     const downloadedMlModel = await handleResponse(response);
@@ -81,23 +89,35 @@ async function downloadMlModel(id) {
 async function downloadDataset(id) {
     const requestOptions = {
         method: 'GET',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ 
-            "token" : authToken
-        })
+        headers: kHeaders
     };
     const response = await fetch(`${BASE_URL}/models/${id}/dataset`, requestOptions);
     const downloadedDataset = await handleResponse(response);
     return downloadedDataset;
 }
 
+//=============== DELETE MODEL ==================
+async function deleteModel(id) {
+    const requestOptions = {
+        method: 'DELETE',
+        headers: kHeaders
+    };
+    const response = await fetch(`${BASE_URL}/models/${id}`, requestOptions);
+    const deletedModel = await handleResponse(response);
+    if (response.status === 204){
+        return 'deleted';
+    }
+    else {
+        return deletedModel;
+    }
+}
+
 //=============== ADMIN PUBLISH NEW MODEL ==================
-async function adminPublishNewModel(name, description, type, mode) {
+async function publishNewModel(name, description, type, mode, poolsSpec, layersSpec, selectInputColor) {
     const requestOptions = {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: kHeaders,
         body: JSON.stringify({ 
-            "token" : authToken,
             "name": name,
             "description": description,
             "model_type": type,
@@ -105,52 +125,52 @@ async function adminPublishNewModel(name, description, type, mode) {
         })
     };
     const response = await fetch(`${BASE_URL}/models`, requestOptions);
-    const downloadedDataset = await handleResponse(response);
-    return downloadedDataset;
+    const publishedNewModel = await handleResponse(response);
+    return publishedNewModel;
 }
 
 //=============== UPLOAD TRAINED MODEL ==================
-async function uploadTrainedModel(id) {
+async function uploadTrainedModel(id, formData) {
     const requestOptions = {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ 
-            "token" : authToken
-            // static_dict / ML Model YET to be implemented
-        })
+        headers: mHeader,
+        body: formData
     };
     const response = await fetch(`${BASE_URL}/models/${id}/model`, requestOptions);
     const uploadedTrainedModel = await handleResponse(response);
-    return uploadedTrainedModel;
+    if (response.status === 204){
+        return 'uploaded';
+    }
+    else {
+        return uploadedTrainedModel;
+    }
 }
 
 //=============== UPLOAD DATSET ==================
-async function uploadDataset(id) {
+async function uploadDataset(id, formData) {
     const requestOptions = {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ 
-            "token" : authToken
-            // dataset file required, YET to be implemented
-        })
+        headers: mHeader,
+        body: formData
     };
     const response = await fetch(`${BASE_URL}/models/${id}/dataset`, requestOptions);
     const uploadedDataset = await handleResponse(response);
-    return uploadedDataset;
+    if (response.status === 204){
+        return 'uploaded';
+    }
+    else {
+        return uploadedDataset;
+    }
 }
 
 //=============== UPLOAD DATSET ==================
-async function uploadFileToAttack(id) {
+async function uploadFileToAttack(id, formData, label) {
     const requestOptions = {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ 
-            "token" : authToken,
-            "label": "ORIGINAL_LABEL" // YET TO CHANGE
-            // model or image file required, YET to be implemented
-        })
+        headers: mHeader,
+        body: formData
     };
-    const response = await fetch(`${BASE_URL}/models/${id}/attack`, requestOptions);
+    const response = await fetch(`${BASE_URL}/models/${id}/attack?label=${label}`, requestOptions);
     const uploadedAttackFile = await handleResponse(response);
     return uploadedAttackFile;
 }
