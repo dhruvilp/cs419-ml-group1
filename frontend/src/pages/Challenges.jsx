@@ -178,9 +178,34 @@ class Challenges extends React.Component {
                          =========================================*/}
                         <TabContent activeTab={"tabs" + this.state.tabs}>
                           <TabPane tabId="tabs2">
-                            <p>
-                              Download ML Models...
-                            </p>
+                          <div>
+                          <h3>
+                            Challenge 1
+                            <Button className="btn-icon btn-3 ml-8" color="primary" type="button" onClick={this.downloadDatasets}>
+                              <span className="btn-inner--icon">
+                                <i className="fa fa-download"></i>
+                              </span>
+                              <span className="btn-inner--text">Download</span>
+                            </Button>
+                          </h3>
+                          <h5>
+                          Trained Model that reconizes numerical digits (0-9)
+                          </h5>
+                        </div>
+                        <div>
+                          <h3>
+                            Challenge 2
+                            <Button className="btn-icon btn-3 ml-7" color="primary" type="button">
+                              <span className="btn-inner--icon">
+                                <i className="fa fa-download"></i>
+                              </span>
+                              <span className="btn-inner--text">Download</span>
+                            </Button>
+                          </h3>
+                          <h5>
+                          Trained model on CIFAR-10 to recognize images. Details: 10 epochs, dropout rate = 0.3, 65% classification accuracy on entire regular test set, ~85 % attack success rate when using hopskipjump method (this attack is very strong), ~40 % attack success rate when using fgsm=0.1
+                          </h5>
+                        </div>
                           </TabPane>
                         </TabContent>
                       </CardBody> 

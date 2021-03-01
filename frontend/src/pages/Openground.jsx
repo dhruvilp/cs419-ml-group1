@@ -1,5 +1,5 @@
 import React from "react";
-import { Card, Container, } from "reactstrap";
+import { Col, Card, Container, Button, CardBody, UncontrolledCollapse } from "reactstrap";
 
 import CybneticsNavbar from "components/CybneticsNavbar";
 import CybneticsFooter from "components/CybneticsFooter";
@@ -10,6 +10,13 @@ class Openground extends React.Component {
     document.scrollingElement.scrollTop = 0;
     this.refs.main.scrollTop = 0;
   }
+
+  toggleModal = state => {
+    this.setState({
+      [state]: !this.state[state]
+    });
+  };
+
   render() {
     return (
       <>
@@ -24,24 +31,33 @@ class Openground extends React.Component {
             </div>
           </section>
           <section className="section">
+            <Col className="mt--200">
             <Container>
-              <Card className="card-profile shadow mt--300">
-                <div className="px-4">
-                  <div className="text-center mt-5">
-                    <h3>
-                      Openground
-                    </h3>
-                  </div>
-                  <div className="text-center mt-5">
-                    <Container>
-                      <h6>
-                        Attack Trained ML Models
-                      </h6>
-                    </Container>
-                  </div>
+              <Card className="card-profile shadow mt--200">
+                <div className="py-5">
+                  <Col className="justify-content-center">
+                    <div className="text-center">
+                      <h3>Openground (Ethical Hacking)</h3>
+                    </div>
+                    <div>
+                      <Button block color="secondary" id="toggler" size="lg" type="button">
+                        Search ML Models...
+                      </Button>
+                    </div>
+                  </Col>
                 </div>
+                <UncontrolledCollapse toggler="#toggler">
+                  <Card>
+                    <CardBody>
+                      Lorem ipsum dolor sit amet consectetur adipisicing elit. Nesciunt magni, voluptas debitis
+                      similique porro a molestias consequuntur earum odio officiis natus, amet hic, iste sed
+                      dignissimos esse fuga! Minus, alias.
+                    </CardBody>
+                  </Card>
+                </UncontrolledCollapse>
               </Card>
             </Container>
+            </Col>
           </section>
         </main>
         <CybneticsFooter />

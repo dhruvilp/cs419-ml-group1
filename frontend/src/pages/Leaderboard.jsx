@@ -14,7 +14,8 @@ class Leaderboard extends React.Component {
       total_successes: 0,
       gold_medals: 0,
       silver_medals: 0,
-      bronze_medals: 0
+      bronze_medals: 0,
+      users: []
     }
   }
 
@@ -30,16 +31,16 @@ class Leaderboard extends React.Component {
         total_successes : data['total_successes'],
         gold_medals : data['gold_medals'],
         silver_medals : data['silver_medals'],
-        bronze_medals : data['bronze_medals']
+        bronze_medals : data['bronze_medals'],
+        users: data['users']
       });
-      console.log(data);
     })
     .catch((error) => {
       console.log(error);
     });
   }
   render() {
-    const {total_attempts, total_successes, gold_medals, silver_medals, bronze_medals} = this.state;
+    const {total_attempts, total_successes, gold_medals, silver_medals, bronze_medals, users} = this.state;
     return (
       <>
         <CybneticsNavbar />
@@ -52,7 +53,7 @@ class Leaderboard extends React.Component {
               </svg>
             </div>
           </section>
-          <section className="section">
+          <section className="section mt--100">
             <Container>
               <Card className="card-profile shadow mt--300">
                 <div className="px-4">
@@ -121,31 +122,19 @@ class Leaderboard extends React.Component {
                             <th style={{"text-align": "initial"}}>Username</th>
                             <th width="50">Total Points</th>
                             <th width="50">Total Attempts</th>
-                            <th width="50">Total Sucesses</th>
+                            <th width="50">Total Successes</th>
                           </tr>
                         </thead>
                         <tbody>
-                          <tr>
-                            <th scope="row">1</th>
-                            <td style={{"text-align": "initial"}}>DeepCNet</td>
-                            <td>1500</td>
-                            <td>2</td>
-                            <td>1</td>
+                          {users.map((user, index) => 
+                           <tr>
+                            <th scope="row">{index+1}</th>
+                            <td style={{"text-align": "initial"}}>{user._id}</td>
+                            <td>{user.total_points}</td>
+                            <td>{user.total_attempts}</td>
+                            <td>{user.total_successes}</td>
                           </tr>
-                          <tr>
-                            <th scope="row">2</th>
-                            <td style={{"text-align": "initial"}}>FrankSharp</td>
-                            <td>800</td>
-                            <td>2</td>
-                            <td>2</td>
-                          </tr>
-                          <tr>
-                            <th scope="row">3</th>
-                            <td style={{"text-align": "initial"}}>MooseBot</td>
-                            <td>300</td>
-                            <td>2</td>
-                            <td>1</td>
-                          </tr>
+                          )}
                         </tbody>
                       </Table>
                     </Container>
